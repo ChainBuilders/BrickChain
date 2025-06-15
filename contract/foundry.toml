@@ -2,6 +2,12 @@
 src = "src"
 out = "out"
 libs = ["lib"]
-remappings = ['@openzeppelin/=lib/openzeppelin-contracts/']
+remappings = [
+    "@openzeppelin/=lib/openzeppelin-contracts/",
+     "@chainlink/=lib/chainlink-brownie-contracts/"
+]
+solc_version = "0.8.24"
+[rpc_endpoints]
+base = "${BASE_SEPOLIA_RPC_URL}"
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
