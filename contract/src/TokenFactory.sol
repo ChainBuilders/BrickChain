@@ -1,16 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.24; 
 
-import "./PropertyToken.sol"; // Import the ERC20 token contract
+import "./PropertyToken.sol";
+import {ITokenFactory} from "../src/interfaces/ITokenFactory.sol";
 
 /// @title TokenFactory
 /// @notice Deploys ERC20 tokens for properties and assigns full ownership to the Realtor
-contract TokenFactory {
-
-    //  add a state variable for the registry address
-    address public registry;
+/// @dev Only callable by the Registry contract
+contract TokenFactory is ITokenFactory {
+    address public immutable registry; // Made immutable since it's set once in constructor
     
-    /// @dev Emitted when a new PropertyToken is created
     event TokenCreated(
         address indexed tokenAddress,
         string name,
@@ -19,30 +18,44 @@ contract TokenFactory {
         address indexed owner
     );
 
-    // Set it once in the constructor (when deploying the factory):
-      constructor(address _registry) {
+    constructor(address _registry) {
+        require(_registry != address(0), "Invalid registry address");
         registry = _registry;
     }
 
-    // Add a modifier that allows only the registry to call createToken
     modifier onlyRegistry() {
         require(msg.sender == registry, "Not authorized");
         _;
     }
 
-    /// @notice Deploys a new ERC20 token contract (PropertyToken)
-    /// @param name Name of the token (e.g. "3-Bedroom Duplex in Lekki")
-    /// @param symbol Token symbol (e.g. "BRICK1")
-    /// @param totalSupply Total token supply (in smallest units, 18 decimals usually)
-    /// @param owner Address to receive all minted tokens (the Realtor)
-    /// @return The address of the newly deployed PropertyToken
+    /// @notice Deploys a new PropertyToken ERC20 contract
+    /// @param name The display name of the token
+    /// @param symbol The ticker symbol (3-6 chars recommended)
+    /// @param totalSupply Total tokens to mint (in wei units)
+    /// @param tokenName Internal name for the token contract
+    /// @param tokenSymbol Internal symbol for the token contract
+    /// @param owner Address that will receive all minted tokens
     function createToken(
         string memory name,
         string memory symbol,
         uint256 totalSupply,
+        string memory tokenName,
+        string memory tokenSymbol,
         address owner
     ) external onlyRegistry returns (address) {
-        PropertyToken token = new PropertyToken(name, symbol, totalSupply, owner);
+        require(totalSupply > 0, "Invalid supply");
+        require(bytes(symbol).length > 0, "Symbol required");
+        require(owner != address(0), "Invalid owner");
+        
+        PropertyToken token = new PropertyToken(
+            name,
+            symbol,
+            totalSupply,
+            tokenName,
+            tokenSymbol,
+            owner
+        );
+        
         emit TokenCreated(address(token), name, symbol, totalSupply, owner);
         return address(token);
     }
