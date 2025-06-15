@@ -553,25 +553,33 @@
 // }
 
 
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 /// @title PropertyToken
 /// @notice Standard ERC20 token representing fractional ownership of a property
 contract PropertyToken is ERC20 {
+
+    string public propertyName;
+string public propertySymbol;
+
+
     /// @notice Constructor mints full supply to the Realtor
     /// @param name Token name
     /// @param symbol Token symbol
     /// @param totalSupply Total tokens to be minted (based on property value)
     /// @param owner Address receiving all minted tokens
     constructor(
-        string memory name,
-        string memory symbol,
-        uint256 totalSupply,
-        address owner
-
-    ) ERC20(name, symbol) {
+       string memory name,        // Property name
+        string memory symbol,      // Token symbol (e.g. "BRICK1")
+        uint256 totalSupply,       // Total token supply
+        string memory tokenName,   // ERC20 token name
+        string memory tokenSymbol, // ERC20 token symbol
+        address owner             // Realtor address
+    ) ERC20(tokenName, tokenSymbol) {
+         propertyName = name;
+    propertySymbol = symbol;
         _mint(owner, totalSupply);
     }
 }
