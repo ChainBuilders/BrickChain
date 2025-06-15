@@ -8,7 +8,7 @@ const FooterSection = () => {
       <div className="text-center px-6 py-16 bg-white">
         <h2 className="text-3xl text-[#0f6a09] font-bold mb-6">Ready to Own Real Estate Your Way?</h2>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Link href="/listings" className="bg-[#0f6a09] text-white font-semibold px-6 py-3 rounded-xl hover:bg-[#c6f8c2] hover:text-[#0f6a09] transition">
+          <Link href="/properties" className="bg-[#0f6a09] text-white font-semibold px-6 py-3 rounded-xl hover:bg-[#c6f8c2] hover:text-[#0f6a09] transition">
               Browse Properties
           
           </Link>

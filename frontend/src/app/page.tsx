@@ -1,5 +1,4 @@
 import ListingsSection from "./components/landingPage/featuredProperty";
-import FooterSection from "./components/landingPage/footer";
 import Hero from "./components/landingPage/hero";
 import HowItWorks from "./components/landingPage/howitWorks";
 import ProblemsAndSolution from "./components/landingPage/problems&solution";
@@ -15,7 +14,6 @@ export default function Home() {
       <ListingsSection />
       <WhyBlockChain />
       <Referral />
-      <FooterSection />
     </div>
   );
 }
