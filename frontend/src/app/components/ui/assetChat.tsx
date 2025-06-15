@@ -1,4 +1,3 @@
-// components/AssetPieChart.tsx
 
 "use client";
 
@@ -9,7 +8,7 @@ const COLORS = ["#0f6a09", "#877512", "#4b9e5d", "#348888", "#ff9900"];
 export default function AssetPieChart({ assets }: { assets: { name: string; value: number }[] }) {
   return (
     <div className="w-full mx-auto ">
-      <h2 className="text-xl font-bold mb-4 text-start text-[#0f6a09] text-center">
+      <h2 className="text-xl font-bold mb-4 text-start text-[#0f6a09] ">
         Your Properties Distribution
       </h2>
       <PieChart width={470} height={430}>
