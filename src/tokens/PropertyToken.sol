@@ -59,11 +59,11 @@
 
 //     // Immutable state variables (set once during deployment)
 //     address public immutable registry; // Address of the registry contract that created this token
-    
+
 //     // Mutable state variables for contract management
 //     address public realtor; // Address of the realtor who owns/manages the property
 //     address public propertyManager; // Address of the property manager (can be different from realtor)
-    
+
 //     // Struct instances to store property and financial data
 //     PropertyInfo public propertyInfo; // Instance of PropertyInfo struct containing property details
 //     FinancialInfo public financialInfo; // Instance of FinancialInfo struct containing financial data
@@ -74,16 +74,16 @@
 //     bool public tradingEnabled = true; // Flag to enable/disable token trading
 //     uint256 public minimumHoldingPeriod = 0; // Minimum time (in seconds) before tokens can be transferred
 //     uint256 public maximumTokensPerWallet = 0; // Maximum number of tokens any wallet can hold (0 = no limit)
-    
+
 //     // Compliance and KYC mappings
 //     mapping(address => bool) public whitelistedInvestors; // Track which addresses are approved for investment
 //     mapping(address => uint256) public investorKYCLevel; // Track KYC verification level (0=none, 1=basic, 2=full)
 //     mapping(address => uint256) public purchaseTimestamp; // Track when each address first purchased tokens
-    
+
 //     // Fee structure for transactions
 //     uint256 public transferFeePercentage = 0; // Transfer fee as percentage (0-10000 = 0-100%)
 //     address public feeRecipient; // Address that receives transfer fees
-    
+
 //     // Staking mechanism variables
 //     mapping(address => uint256) public stakedBalances; // Track staked token amounts for each address
 //     mapping(address => uint256) public stakingRewards; // Track accumulated staking rewards for each address
@@ -194,10 +194,10 @@
 //     ) external onlyRole(ADMIN_ROLE) { // Only admin can call this function
 //         require(investor != address(0), "Invalid investor address"); // Ensure investor address is valid
 //         require(kycLevel <= 2, "Invalid KYC level"); // Ensure KYC level is within valid range
-        
+
 //         whitelistedInvestors[investor] = true; // Add investor to whitelist mapping
 //         investorKYCLevel[investor] = kycLevel; // Set investor's KYC level
-        
+
 //         emit InvestorWhitelisted(investor, kycLevel); // Emit event for whitelisting
 //     }
 
@@ -213,7 +213,7 @@
 //         uint256[] calldata kycLevels // Array of corresponding KYC levels
 //     ) external onlyRole(ADMIN_ROLE) { // Only admin can call this function
 //         require(investors.length == kycLevels.length, "Arrays length mismatch"); // Ensure arrays have same length
-        
+
 //         for (uint256 i = 0; i < investors.length; i++) { // Loop through all investors
 //             if (investors[i] != address(0) && kycLevels[i] <= 2) { // Validate each entry
 //                 whitelistedInvestors[investors[i]] = true; // Add to whitelist
@@ -239,7 +239,7 @@
 //         require(tradingEnabled, "Trading is currently disabled"); // Check if trading is enabled
 //         require(tokenAmount > 0, "Must buy at least 1 token"); // Ensure purchase amount is valid
 //         require(investorKYCLevel[msg.sender] >= 1, "Minimum KYC level required"); // Check minimum KYC level
-        
+
 //         uint256 totalCost = tokenAmount.mul(propertyInfo.tokenPrice); // Calculate total cost of purchase
 //         require(msg.value >= totalCost, "Insufficient payment"); // Check if enough ETH was sent
 
@@ -291,7 +291,7 @@
 
 //         // Transfer tokens from user to contract for staking
 //         _transfer(msg.sender, address(this), amount); // Move tokens to contract
-        
+
 //         stakedBalances[msg.sender] = stakedBalances[msg.sender].add(amount); // Update user's staked balance
 //         totalStaked = totalStaked.add(amount); // Update total staked amount
 //         lastStakeTime[msg.sender] = block.timestamp; // Record staking timestamp
@@ -319,12 +319,12 @@
 //     // Function to claim accumulated staking rewards
 //     function claimStakingRewards() external nonReentrant { // No parameters needed
 //         _updateStakingRewards(msg.sender); // Update rewards calculation
-        
+
 //         uint256 rewards = stakingRewards[msg.sender]; // Get user's total rewards
 //         require(rewards > 0, "No rewards to claim"); // Ensure there are rewards to claim
 
 //         stakingRewards[msg.sender] = 0; // Reset user's rewards to zero
-        
+
 //         // Mint new tokens as rewards (inflationary staking model)
 //         _mint(msg.sender, rewards); // Create new tokens for user as rewards
 
@@ -337,7 +337,7 @@
 //             uint256 stakingDuration = block.timestamp.sub(lastStakeTime[staker]); // Calculate time since last stake
 //             uint256 annualReward = stakedBalances[staker].mul(stakingAPY).div(10000); // Calculate annual reward amount
 //             uint256 reward = annualReward.mul(stakingDuration).div(365 days); // Calculate pro-rated reward
-            
+
 //             stakingRewards[staker] = stakingRewards[staker].add(reward); // Add to user's rewards
 //             lastStakeTime[staker] = block.timestamp; // Update last stake time
 //         }
@@ -404,7 +404,7 @@
 //     // Function to update the property's valuation
 //     function updatePropertyValuation(uint256 newValuation) external onlyPropertyManager { // New valuation amount
 //         require(newValuation > 0, "Valuation must be greater than 0"); // Ensure valuation is positive
-        
+
 //         financialInfo.lastValuationAmount = newValuation; // Store new valuation amount
 //         financialInfo.lastValuationDate = block.timestamp; // Record valuation timestamp
 //         propertyInfo.propertyValue = newValuation; // Update property value
@@ -483,13 +483,13 @@
 //         address from, // Address sending tokens
 //         address to, // Address receiving tokens
 //         uint256 amount // Amount of tokens being transferred
-//     ) internal 
+//     ) internal
 //         override(ERC20, ERC20Pausable) // Override parent contract functions
 //         respectsHoldingPeriod(from) // Check holding period requirement
 //         respectsWalletLimit(to, amount) // Check wallet limit requirement
 //     {
 //         require(transfersEnabled || from == address(0) || to == address(0), "Transfers are disabled"); // Check if transfers are enabled (except minting/burning)
-        
+
 //         if (from != address(0) && to != address(0)) { // If not minting or burning
 //             require(whitelistedInvestors[to], "Recipient not whitelisted"); // Ensure recipient is whitelisted
 //         }
@@ -529,7 +529,7 @@
 //     ) {
 //         stakedBalance = stakedBalances[staker]; // Get staked balance
 //         lastStakeTimestamp = lastStakeTime[staker]; // Get last stake time
-        
+
 //         // Calculate pending rewards based on time elapsed
 //         if (stakedBalance > 0 && lastStakeTimestamp > 0) { // If user has staked tokens
 //             uint256 stakingDuration = block.timestamp.sub(lastStakeTimestamp); // Calculate time elapsed
@@ -552,7 +552,6 @@
 //     }
 // }
 
-
 pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -560,10 +559,8 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 /// @title PropertyToken
 /// @notice Standard ERC20 token representing fractional ownership of a property
 contract PropertyToken is ERC20 {
-
     string public propertyName;
-string public propertySymbol;
-
+    string public propertySymbol;
 
     /// @notice Constructor mints full supply to the Realtor
     /// @param name Token name
@@ -571,15 +568,15 @@ string public propertySymbol;
     /// @param totalSupply Total tokens to be minted (based on property value)
     /// @param owner Address receiving all minted tokens
     constructor(
-       string memory name,        // Property name
-        string memory symbol,      // Token symbol (e.g. "BRICK1")
-        uint256 totalSupply,       // Total token supply
-        string memory tokenName,   // ERC20 token name
+        string memory name, // Property name
+        string memory symbol, // Token symbol (e.g. "BRICK1")
+        uint256 totalSupply, // Total token supply
+        string memory tokenName, // ERC20 token name
         string memory tokenSymbol, // ERC20 token symbol
-        address owner             // Realtor address
+        address owner // Realtor address
     ) ERC20(tokenName, tokenSymbol) {
-         propertyName = name;
-    propertySymbol = symbol;
+        propertyName = name;
+        propertySymbol = symbol;
         _mint(owner, totalSupply);
     }
 }

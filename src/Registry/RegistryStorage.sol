@@ -1,6 +1,3 @@
-
-
-
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
@@ -10,16 +7,16 @@ import "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.so
 abstract contract RegistryStorage {
     // Roles
     bytes32 public constant REALTOR_ROLE = keccak256("REALTOR_ROLE");
-    
+
     // Configuration
     address public feeRecipient;
     uint256 public listingFee;
     ITokenFactory public tokenFactory;
     AggregatorV3Interface public priceFeed;
-    
+
     // Counters
     uint256 public propertyCounter;
-    
+
     // Property Data Structure
     struct Property {
         uint256 id;
@@ -34,8 +31,10 @@ abstract contract RegistryStorage {
         uint256 listedFee;
         uint256 pricePerToken;
         uint256 timestamp;
+        uint256 realtorPropertyCount;
+        uint256 tokenSupply;
     }
-    
+
     // Mappings
     mapping(uint256 => Property) public properties;
     mapping(address => uint256[]) public realtorToProperties;

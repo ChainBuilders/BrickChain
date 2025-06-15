@@ -1,22 +1,24 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24; 
+pragma solidity ^0.8.24;
 
-import "./PropertyToken.sol";
-import {ITokenFactory} from "../src/interfaces/ITokenFactory.sol";
+import "../tokens/PropertyToken.sol";
+import {ITokenFactory} from "../interfaces/ITokenFactory.sol";
 
 /// @title TokenFactory
 /// @notice Deploys ERC20 tokens for properties and assigns full ownership to the Realtor
 /// @dev Only callable by the Registry contract
 contract TokenFactory is ITokenFactory {
-    address public immutable registry; // Made immutable since it's set once in constructor
-    
-    event TokenCreated(
-        address indexed tokenAddress,
-        string name,
-        string symbol,
-        uint256 supply,
-        address indexed owner
-    );
+    address public immutable registry; // Made immutable since it will be set once in constructor
+
+    // event TokenCreated(
+    //     address indexed tokenAddress,
+    //     string name,
+    //     string symbol,
+    //     uint256 supply,
+    //     string tokenName,
+    //     string tokenSymbol,
+    //     address indexed owner
+    // );
 
     constructor(address _registry) {
         require(_registry != address(0), "Invalid registry address");
@@ -46,17 +48,10 @@ contract TokenFactory is ITokenFactory {
         require(totalSupply > 0, "Invalid supply");
         require(bytes(symbol).length > 0, "Symbol required");
         require(owner != address(0), "Invalid owner");
-        
-        PropertyToken token = new PropertyToken(
-            name,
-            symbol,
-            totalSupply,
-            tokenName,
-            tokenSymbol,
-            owner
-        );
-        
-        emit TokenCreated(address(token), name, symbol, totalSupply, owner);
+
+        PropertyToken token = new PropertyToken(name, symbol, totalSupply, tokenName, tokenSymbol, owner);
+
+        emit TokenCreated(address(token), name, symbol, totalSupply, tokenName, tokenSymbol, owner);
         return address(token);
     }
 }

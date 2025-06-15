@@ -64,7 +64,7 @@
 //         bool isActive;           // Active status (soft delete)
 //         string metadataURI;      // Metadata image or JSON
 //         uint256 listedFee;       // Listing fee charged (in USD)
-//         uint256 pricePerToken;   // Price per token 
+//         uint256 pricePerToken;   // Price per token
 //         uint256 timestamp;       // Timestamp of last update
 //     }
 
@@ -134,7 +134,7 @@
 //         uint256 _pricePerTokenUSD,
 //         string memory _metadataURI
 //     ) external payable onlyRealtor {
-//         // Defensive check 
+//         // Defensive check
 //         require(_totalValueUSD > 0, "Total property value must be > 0");
 //         require(bytes(_name).length > 0, "Property name is required");
 //         require(
@@ -293,7 +293,7 @@
 //         emit TokenFactoryUpdated(newFactory);
 //     }
 
-//     /// @notice Frontend use 
+//     /// @notice Frontend use
 //     function getAllProperties() external view returns (Property[] memory) {
 //         Property[] memory props = new Property[](propertyCounter);
 //         for (uint256 i = 1; i <= propertyCounter; i++) {

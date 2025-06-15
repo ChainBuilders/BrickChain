@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24; // Updated to match your other contracts
 
 interface ITokenFactory {
-   event TokenCreated(
+    event TokenCreated(
         address indexed tokenAddress,
         string name,
         string symbol,
@@ -22,6 +22,7 @@ interface ITokenFactory {
      * @param _realtor Address that will receive all minted tokens
      * @return tokenAddress The address of the newly deployed PropertyToken
      */
+
     function createToken(
         string calldata _name,
         string calldata _symbol,

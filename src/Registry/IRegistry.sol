@@ -5,14 +5,24 @@ import "./RegistryStorage.sol";
 
 interface IRegistry {
     // Events
-      // Events
-    event PropertyRegistered(uint256 indexed propertyId, address indexed realtor, string name, string description, uint256 listedFee, string metadataURI, uint256 timestamp);
+    // Events
+    event PropertyRegistered(
+        uint256 indexed propertyId,
+        address indexed realtor,
+        string name,
+        string description,
+        uint256 listedFee,
+        string metadataURI,
+        uint256 timestamp
+    );
     event TokenLinked(uint256 indexed propertyId, address tokenAddress);
     event PropertyStatusUpdated(uint256 indexed propertyId, bool isActive);
     event PropertyDeactivated(uint256 indexed propertyId);
     event TokenFactoryUpdated(address newFactory);
     event FeeTransferred(address indexed recipient, uint256 amount);
     event FeeRecipientUpdated(address newRecipient);
+    event RealtorPropertyUpdated(address indexed realtor, uint256 newPropertyId, uint256[] propertyIds);
+    event RealtorPropertyCount(address indexed realtor, uint256 totalProperties);
 
     // Struct (must match RegistryStorage)
     // struct Property {

@@ -12,11 +12,7 @@ library SymbolUtils {
         uint256 j = 0;
         for (uint256 i = 0; i < nameBytes.length && j < 8; i++) {
             bytes1 char = nameBytes[i];
-            if (
-                (char >= 0x30 && char <= 0x39) ||
-                (char >= 0x41 && char <= 0x5A) ||
-                (char >= 0x61 && char <= 0x7A)
-            ) {
+            if ((char >= 0x30 && char <= 0x39) || (char >= 0x41 && char <= 0x5A) || (char >= 0x61 && char <= 0x7A)) {
                 // Convert lowercase to uppercase
                 if (char >= 0x61 && char <= 0x7A) {
                     char = bytes1(uint8(char) - 32);

@@ -9,6 +9,7 @@ import {ITokenFactory} from "../interfaces/ITokenFactory.sol";
 import {PriceConverter} from "../utils/PriceConverter.sol";
 import {SymbolUtils} from "../utils/SymbolUtils.sol";
 import {StringUtils} from "../utils/StringUtils.sol";
+import {IKYCManager} from "../interfaces/IKYCManager.sol";
 
 contract Registry is AccessControl, RegistryStorage, IRegistry {
     using StringUtils for uint256;
@@ -16,18 +17,15 @@ contract Registry is AccessControl, RegistryStorage, IRegistry {
     using SymbolUtils for string;
     using PriceConverter for uint256;
 
-    constructor(
-        address admin,
-        address _tokenFactory,
-        uint256 _listingFee,
-        address _feeRecipient,
-        address _priceFeed
-    ) {
+    IKYCManager public kycManager;
+
+    constructor(address admin, address _tokenFactory, uint256 _listingFee, address _feeRecipient, address _priceFeed, address _kycManager) {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         _setTokenFactory(_tokenFactory);
         listingFee = _listingFee;
         _setFeeRecipient(_feeRecipient);
         priceFeed = AggregatorV3Interface(_priceFeed);
+        kycManager = IKYCManager(_kycManager);
     }
 
     // ========== MODIFIERS ==========
@@ -49,8 +47,10 @@ contract Registry is AccessControl, RegistryStorage, IRegistry {
         string calldata _description,
         uint256 _pricePerTokenUSD,
         string calldata _metadataURI
+
     ) external payable onlyRealtor {
         // Input validation
+        require(kycManager.isKYCApproved(msg.sender), "KYC not approved");
         require(_totalValueUSD > 0, "Total property value must be > 0");
         require(bytes(_name).length > 0, "Property name is required");
         require(_isValidURI(_metadataURI), "Invalid metadata URI");
@@ -69,7 +69,7 @@ contract Registry is AccessControl, RegistryStorage, IRegistry {
         uint256 listingFeeETH = listingFeeUSD.getETHAmountFromUSD(priceFeed);
         require(msg.value >= listingFeeETH, "Insufficient listing fee");
 
-        (bool sent, ) = feeRecipient.call{value: msg.value}("");
+        (bool sent,) = feeRecipient.call{value: msg.value}("");
         require(sent, "Fee transfer failed");
         emit FeeTransferred(feeRecipient, msg.value);
 
@@ -103,12 +103,18 @@ contract Registry is AccessControl, RegistryStorage, IRegistry {
             metadataURI: _metadataURI,
             listedFee: listingFeeUSD,
             pricePerToken: _pricePerTokenUSD,
-            timestamp: block.timestamp
+            timestamp: block.timestamp,
+            tokenSupply: tokenSupply,
+            realtorPropertyCount: realtorToProperties[msg.sender].length + 1
         });
 
         realtorToProperties[msg.sender].push(newPropertyId);
 
-        emit PropertyRegistered(newPropertyId, msg.sender, _name, _description, listingFeeUSD, _metadataURI, block.timestamp);
+        emit PropertyRegistered(
+            newPropertyId, msg.sender, _name, _description, listingFeeUSD, _metadataURI, block.timestamp
+        );
+        emit RealtorPropertyCount(msg.sender, realtorToProperties[msg.sender].length);
+
         emit TokenLinked(newPropertyId, token);
     }
 
@@ -121,16 +127,16 @@ contract Registry is AccessControl, RegistryStorage, IRegistry {
     function _isValidURI(string calldata uri) internal pure returns (bool) {
         bytes memory uriBytes = bytes(uri);
         if (uriBytes.length < 9) return false;
-        
+
         bytes memory ipfsPrefix = bytes("ipfs://");
         bytes memory httpsPrefix = bytes("https://");
-        
+
         return _startsWith(uriBytes, ipfsPrefix) || _startsWith(uriBytes, httpsPrefix);
     }
 
     function _startsWith(bytes memory data, bytes memory prefix) internal pure returns (bool) {
         if (data.length < prefix.length) return false;
-        for (uint i = 0; i < prefix.length; i++) {
+        for (uint256 i = 0; i < prefix.length; i++) {
             if (data[i] != prefix[i]) return false;
         }
         return true;
@@ -165,7 +171,12 @@ contract Registry is AccessControl, RegistryStorage, IRegistry {
         return realtorToProperties[_realtor];
     }
 
-    function getProperty(uint256 propertyId) external view validProperty(propertyId) returns (RegistryStorage.Property memory) {
+    function getProperty(uint256 propertyId)
+        external
+        view
+        validProperty(propertyId)
+        returns (RegistryStorage.Property memory)
+    {
         return properties[propertyId];
     }
 
