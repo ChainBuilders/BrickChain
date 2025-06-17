@@ -1,5 +1,3 @@
-
-```
 # 🧱 BrickChain
 
 **Tokenizing Nigeria's Real Estate, One Property at a Time.**
