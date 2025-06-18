@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
@@ -65,7 +64,6 @@ $ forge --help
 $ anvil --help
 $ cast --help
 ```
-=======
 # 🧱 BrickChain
 
 **Tokenizing Nigeria's Real Estate, One Property at a Time.**
@@ -232,4 +230,3 @@ We believe BrickChain can unlock billions in dormant property value across Afric
 
 
 
->>>>>>> origin/main
