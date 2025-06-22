@@ -74,12 +74,12 @@ export default function Properties() {
     setToggleFilter(!toggleFilter);
   };
   return (
-    <div className="pt-10 px-4 md:px-20 lg:px-40 bg-[white] min-h-screen">
-      <div className="w-full flex items-center justify-center bg-[#0f6a09]">
+    <div className="pt-5 px-4 md:px-20 lg:px-40 bg-[white] min-h-screen">
+      <div className="w-full flex items-center justify-between ">
         <SearchBar />
         <div className="flex items-center space-x-2 relative">
-          <strong className="text-white">Filter:</strong>
-          <p className="border-b w-[200px] text-center bg-white flex justify-between items-center rounded-[8px] border-[#6f5a0c] text-[#6f5a0c] py-2 px-2">
+          <strong className="text-green-800">Filter:</strong>
+          <p className="border-b w-[200px] text-cente flex justify-between items-center bg-[#f6f2f2] border-[#000000] text-[#000000] py-2 px-2">
             {" "}
             <span className="">{selected}</span>{" "}
             <button onClick={handleToggleFilter}>

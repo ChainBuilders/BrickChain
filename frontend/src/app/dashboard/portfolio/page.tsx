@@ -133,10 +133,10 @@ export default function Portfolio() {
       <div className="flex w-full mt-5">
         <AssetPieChart assets={assetData} />
         <div className="w-full   ">
-          <h1 className="text-[20px] font-[600] text-[#0f6a09]">Recent Transaction</h1>
+          <h1 className="text-[20px] font-[600] text-[#6f5a0c]">Recent Transaction</h1>
           <div className="max-h-[450px]  overflow-y-scroll">
           <table className="w-full mt-4 border-collapse ">
-            <thead className="bg-[#0f6a09] text-white"  >
+            <thead className="bg-[#6f5a0c] text-white"  >
               <th className="py-1 text-start pl-2">Action</th>
               <th className="py-1 text-start pl-2">Amount</th>
               <th className="py-1 text-start pl-2">Location</th>

@@ -17,7 +17,7 @@ export default function SideNave() {
   ];
 
   return (
-    <div className="w-[250px] h-screen bg-[#0f6a09] shadow-md flex flex-col items-center justify-between py-4">
+    <div className="w-[250px] h-screen bg-[#6f5a0c] shadow-md flex flex-col items-center justify-between py-4">
       <div className="flex flex-col items-center space-y-4 w-full">
         <h1 className="text-white text-2xl font-bold">Dashboard</h1>
        
@@ -30,8 +30,8 @@ export default function SideNave() {
                 href={item.href}
                 className={`flex items-center w-full text-[20px] text-white gap-2 px-3 py-2  text-sm transition ${
                   isActive
-                    ? "bg-[#6f5a0c] text-white"
-                    : "text-gray-700 hover:bg-gray-100 hover:text-[#6f5a0c]"
+                    ? "bg-[#000000] text-white"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-[#000000]"
                 }`}
               >
                 <span>{item.icon}</span>

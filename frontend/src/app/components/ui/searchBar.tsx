@@ -6,7 +6,7 @@ export default function SearchBar() {
       <input
         type="text"
         placeholder="Search properties..."
-        className="flex-1 p-2 border bg-white border-gray-300 text-[#6f5a0c] rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+        className="flex-1 p-2 border bg-white border-gray-300 text-[#000000] rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
       />
       <button className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition">
         Search
