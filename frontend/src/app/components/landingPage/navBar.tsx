@@ -15,7 +15,7 @@ export default function NavBar() {
 
   const pathname = usePathname();
 
-  const isLoggedIn = false;
+  const isLoggedIn = true;
 
   const links = isLoggedIn
     ? ["Home", "Properties", "Dashboard", "About", "Contact"]
