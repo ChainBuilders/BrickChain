@@ -3,17 +3,20 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /// @title AccessManager
 /// @notice Centralized role, KYC, blacklist, and permission management for Brickchain ecosystem
 /// @dev Inherit OpenZeppelin AccessControl and Pausable for robust access and emergency controls
-contract AccessManager is AccessControl, Pausable {
+contract AccessManager is AccessControl, Pausable, ReentrancyGuard {
     /// @notice Role identifiers
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant REALTOR_ROLE = keccak256("REALTOR_ROLE");
     bytes32 public constant INVESTOR_ROLE = keccak256("INVESTOR_ROLE");
     bytes32 public constant TENANT_ROLE = keccak256("TENANT_ROLE");
     bytes32 public constant AUDITOR_ROLE = keccak256("AUDITOR_ROLE");
+    /// @notice Role for managing tokens
+    bytes32 public constant TOKEN_ADMIN_ROLE = keccak256("TOKEN_ADMIN_ROLE");
 
     /// @notice Mapping to track KYC verification status
     mapping(address => bool) public isKYCVerified;
@@ -41,9 +44,20 @@ contract AccessManager is AccessControl, Pausable {
     constructor(address superAdmin) {
         _grantRole(DEFAULT_ADMIN_ROLE, superAdmin); // Give superAdmin full admin rights
         _grantRole(ADMIN_ROLE, superAdmin); // Also grant explicit ADMIN_ROLE
+        _grantRole(TOKEN_ADMIN_ROLE, superAdmin);
     }
 
     // --- MODIFIERS ---
+
+    /// @notice Restricts access to users with either admin or auditor role
+    modifier onlyAdminOrAuditor() {
+        bytes32[] memory roles = new bytes32[](2); // ✅ Properly declare the array
+        roles[0] = DEFAULT_ADMIN_ROLE;
+        roles[1] = AUDITOR_ROLE;
+
+        require(hasAnyRole(msg.sender, roles), "Not admin or auditor");
+        _;
+    }
 
     /// @notice Restricts function to non-blacklisted addresses
     modifier notBlacklisted() {
@@ -75,6 +89,19 @@ contract AccessManager is AccessControl, Pausable {
     }
 
     // --- ADMIN & AUDITOR FUNCTIONS ---
+
+    /// @notice Checks if an account has any one of the given roles
+    /// @param account The address to check
+    /// @param roles An array of role identifiers
+    /// @return True if the account has at least one role
+    function hasAnyRole(address account, bytes32[] memory roles) public view returns (bool) {
+        for (uint256 i = 0; i < roles.length; i++) {
+            if (hasRole(roles[i], account)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /// @notice Set KYC verification status for a user (auditor only)
     /// @param user The address to update
