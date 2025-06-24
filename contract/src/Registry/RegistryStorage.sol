@@ -6,7 +6,7 @@ import "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.so
 
 abstract contract RegistryStorage {
     // Roles
-    bytes32 public constant REALTOR_ROLE = keccak256("REALTOR_ROLE");
+    // bytes32 public constant REALTOR_ROLE = keccak256("REALTOR_ROLE");
 
     // Configuration
     address public feeRecipient;
@@ -33,6 +33,7 @@ abstract contract RegistryStorage {
         uint256 timestamp;
         uint256 realtorPropertyCount;
         uint256 tokenSupply;
+        address vault;
     }
 
     // Mappings

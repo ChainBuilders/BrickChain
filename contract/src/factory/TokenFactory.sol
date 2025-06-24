@@ -37,22 +37,37 @@ contract TokenFactory is ITokenFactory {
     /// @param tokenName Internal name for the token contract
     /// @param tokenSymbol Internal symbol for the token contract
     /// @param owner Address that will receive all minted tokens
+    /// @param propertyURI Metadata URI for the property
+    /// @param kycManager Address of the KYC manager contract
+    /// @param vault Address where the tokens will be sent initially
     function createToken(
         string memory name,
         string memory symbol,
         uint256 totalSupply,
         string memory tokenName,
         string memory tokenSymbol,
-        address owner,
-        address kycManager
+        string memory propertyURI,
+        address kycManager,
+        address owner, // This is the Realtor who will own the tokens
+        // The vault address is where the tokens will be sent initially
+        address vault
     ) external onlyRegistry returns (address) {
         require(totalSupply > 0, "Invalid supply");
         require(bytes(symbol).length > 0, "Symbol required");
-        require(owner != address(0), "Invalid owner");
+        require(vault != address(0), "Invalid owner");
 
-        PropertyToken token = new PropertyToken(name, symbol, totalSupply, tokenName, tokenSymbol, owner, kycManager);
+        PropertyToken token = new PropertyToken(
+            kycManager, // address accessManagerAddress
+            name, // string memory name (property name)
+            symbol, // string memory symbol (property symbol)
+            totalSupply, // uint256
+            tokenName, // string memory tokenName (ERC20 name)
+            tokenSymbol, // string memory tokenSymbol (ERC20 symbol)
+            propertyURI, // string memory _propertyURI (metadata URI)
+            vault // ✅ address owner — tokens go to the vault);
+        );
 
-        emit TokenCreated(address(token), name, symbol, totalSupply, tokenName, tokenSymbol, owner);
+        emit TokenCreated(address(token), name, symbol, totalSupply, tokenName, tokenSymbol, owner, kycManager, vault);
         return address(token);
     }
 }
