@@ -1,14 +1,28 @@
+"use client";
+
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import Overview from "../components/otherPages/overview";
 import { ArrowRight, Calculator } from "lucide-react";
 import InvestmentCalculator from "../components/otherPages/investmentCalculator";
 import PropertiesStatistic from "../components/otherPages/propertiesStatistic";
 import { listings } from "@/data/listing";
 import PropertyCard from "../components/ui/propertyCard";
+import Financial from "../components/otherPages/financial";
+import Documents from "../components/otherPages/documents";
+import Locations from "../components/otherPages/locations";
+<div>Overview content</div>      
+interface TabProps {
+  tab: string;
+}
 
 export default function Properties() {
   const tabs = ["Overview", "Finncial", "Documents", "Location"];
+  const [activeTab, setActiveTab] = useState("Overview");
+
+  const handleTabChange = (tab: string): void => {
+    setActiveTab(tab);
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -157,18 +171,24 @@ export default function Properties() {
                 </div>
               </div>
             </div>
-            <div className="rounded-lg bg-card text-card-foreground border-0 shadow-lg bg-white">
-              <div className="h-10 items-center justify-center rounded-md  p-1 text-muted-foreground grid w-full grid-cols-4">
+            <div className="rounded-lg  text-card-foreground border-0 shadow-lg bg-[white]">
+              <div className={`h-10 items-center justify-center rounded-md p-1 bg-[#eeeded]  grid w-full grid-cols-4`}>
                 {tabs.map((tab, index) => (
                   <button
+                    onClick={() => handleTabChange(tab)}
                     key={index}
-                    className={`inline-flex items-center justify-center whitespace-nowrap cursor-pointer rounded-sm px-3 py-2.5 font-medium `}
+                    className={`inline-flex items-center justify-center gap-2  ${activeTab === tab ? "bg-white" : "bg-transparent"} whitespace-nowrap cursor-pointer rounded-sm px-3 py-2.5 font-medium `}
                   >
                     {tab}
                   </button>
                 ))}
               </div>
-              <Overview />
+              <div className="mt-4">
+                {activeTab === "Overview" && <Overview />}
+                {activeTab === "Finncial" && <Financial />}
+                {activeTab === "Documents" && <Documents />}
+                {activeTab === "Location" && <Locations />}
+              </div>
             </div>
           </div>
           <div className="space-y-6 ">
