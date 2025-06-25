@@ -21,7 +21,7 @@ const Button: React.FC<ButtonProps> = ({ link, children, className = '' }) => {
   return (
     <button
       onClick={handleClick}
-      className={`text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ${className}`}
+      className={` font-semibold py-2 px-4 rounded-lg transition duration-300 ${className}`}
     >
       {children}
     </button>

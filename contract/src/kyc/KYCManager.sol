@@ -56,10 +56,10 @@ contract KYCManager is AccessManager {
     // --- MODIFIERS ---
 
     /// @notice Restricts function to admin or auditor roles
-    modifier onlyAdminOrAuditor() {
-        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender) || hasRole(AUDITOR_ROLE, msg.sender), "Not admin or auditor");
-        _;
-    }
+    // modifier onlyAdminOrAuditor() {
+    //     require(hasAnyRole(DEFAULT_ADMIN_ROLE, msg.sender) || hasAnyRole(AUDITOR_ROLE, msg.sender), "Not admin or auditor");
+    //     _;
+    // }
 
     /// @notice Restricts function to KYC-approved realtors
     modifier onlyKYCApproved() {

@@ -3,6 +3,7 @@ import Hero from "./components/landingPage/hero";
 import HowItWorks from "./components/landingPage/howitWorks";
 import ProblemsAndSolution from "./components/landingPage/problems&solution";
 import Referral from "./components/landingPage/referral";
+import Whitelist from "./components/landingPage/whitelist";
 import WhyBlockChain from "./components/landingPage/whyBlockChain";
 
 export default function Home() {
@@ -14,6 +15,7 @@ export default function Home() {
       <ListingsSection />
       <WhyBlockChain />
       <Referral />
+      <Whitelist />
     </div>
   );
 }
