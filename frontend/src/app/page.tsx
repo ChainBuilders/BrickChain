@@ -1,3 +1,5 @@
+import { LoginModal } from "./components/auth/login-modal";
+import { LoginRegisterPrompt } from "./components/auth/login-registration";
 import { RegistrationModal } from "./components/auth/registration-modal";
 import ListingsSection from "./components/landingPage/featuredProperty";
 import Hero from "./components/landingPage/hero";
@@ -18,6 +20,8 @@ export default function Home() {
       <Referral />
       <Whitelist />
       <RegistrationModal />
+      <LoginRegisterPrompt />
+      <LoginModal />
     </div>
   );
 }

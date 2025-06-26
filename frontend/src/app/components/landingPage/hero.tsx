@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useModalStore } from "@/stores/modalStore";
 
 export default function Hero() {
-  const openModal = useModalStore((state) => state.openModal);
+  const onLoginModal = useModalStore((state) => state.onLoginPrompt);
 
   return (
     <div
@@ -29,7 +29,7 @@ export default function Hero() {
         and earn yeild all on blockChain
       </p>
       <div className="mt-8 flex flex-col md:flex-row items-center  space-x-0 md:space-x-4 space-y-4 md:space-y-0">
-        <Link onClick={() => openModal()} href="">
+        <Link onClick={onLoginModal} href="">
           <Button className="bg-gradient-to-r hover:cursor-pointer from-[#34b792] w-[180px] to-[#328b79] lg:h-[60px] text-white lg:w-[220px] text-[20px] rounded-sm justify-center flex items-center space-x-2">
             <span>Get Started</span>
             <ArrowRight color="white" size={20} />
