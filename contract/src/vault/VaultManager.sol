@@ -18,10 +18,7 @@ contract VaultManager is AccessManager {
 
     /// @notice Emitted when escrowed stablecoin is withdrawn to a realtor
     event WithdrawProcessed(
-        uint256 indexed propertyId,
-        address indexed stablecoin,
-        uint256 amount,
-        address indexed recipient
+        uint256 indexed propertyId, address indexed stablecoin, uint256 amount, address indexed recipient
     );
 
     /// @notice Emitted after successful end-to-end investment flow execution
@@ -49,12 +46,10 @@ contract VaultManager is AccessManager {
     /// @param stablecoin Address of stablecoin used in escrow deposit
     /// @param investor Investor address receiving property tokens
     /// @param realtor Realtor address receiving stablecoin funds
-    function finalizeInvestment(
-        uint256 propertyId,
-        address stablecoin,
-        address investor,
-        address realtor
-    ) external onlyRole(ADMIN_ROLE) {
+    function finalizeInvestment(uint256 propertyId, address stablecoin, address investor, address realtor)
+        external
+        onlyRole(ADMIN_ROLE)
+    {
         require(investor != address(0), "Invalid investor");
         require(realtor != address(0), "Invalid realtor");
         require(stablecoin != address(0), "Invalid stablecoin");

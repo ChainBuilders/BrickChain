@@ -34,8 +34,6 @@ contract Escrow is AccessManager, IEscrow {
     /// @notice Deposit expiration period (e.g. 30 days)
     uint256 public constant EXPIRY_PERIOD = 30 days;
 
-   
-
     /// @notice Constructor to initialize roles and external KYC manager
     /// @param _admin Address granted the ADMIN_ROLE
     /// @param _kycManager External KYC manager contract

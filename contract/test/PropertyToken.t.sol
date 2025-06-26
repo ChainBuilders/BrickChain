@@ -15,8 +15,8 @@ contract PropertyTokenTest is Test {
 
     function setUp() public {
         // accessManager = new AccessManager(address(this));
-        
-    accessManager = new MockAccessManager();
+
+        accessManager = new MockAccessManager();
         token = new PropertyToken(
             address(accessManager),
             "Property Name",
@@ -68,9 +68,7 @@ contract PropertyTokenTest is Test {
         console.log("Owner updated URI");
 
         vm.prank(notOwner);
-       vm.expectRevert(
-    abi.encodeWithSignature("OwnableUnauthorizedAccount(address)", notOwner)
-);
+        vm.expectRevert(abi.encodeWithSignature("OwnableUnauthorizedAccount(address)", notOwner));
         token.setPropertyURI("ipfs://fail-uri");
         console.log("Non-owner cannot update URI");
     }
