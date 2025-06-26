@@ -2,6 +2,7 @@
 
 import { useModalStore } from "@/stores/modalStore";
 import {
+  AlertCircle,
   ArrowRight,
   Building2,
   CheckCircle,
@@ -14,7 +15,8 @@ import { Input } from "../ui/Input";
 import Label from "../ui/Labal";
 
 export function RegistrationModal() {
-  const { isOpen, closeModal, role } = useModalStore();
+  const { isRegisterOpen, onCloseRegisterModal, onLoginModal, role } =
+    useModalStore();
   const [selectedType, setSelectedType] = useState<
     "investor" | "realtor" | null
   >(role);
@@ -32,7 +34,7 @@ export function RegistrationModal() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const resetModal = () => {
-    setStep(role ? 2 : 1);
+    setStep(1);
     setSelectedType(role);
     setErrors({});
     setFormData({
@@ -148,7 +150,7 @@ export function RegistrationModal() {
   };
 
   const handleBack = () => {
-    if (step === 2 && !role) {
+    if (step === 2 && selectedType) {
       setStep(1);
       setSelectedType(null);
       setErrors({});
@@ -156,28 +158,28 @@ export function RegistrationModal() {
   };
 
   function handleClose() {
-    closeModal();
+    onCloseRegisterModal();
     resetModal();
   }
 
   useEffect(() => {
-    if (isOpen) {
+    if (isRegisterOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
     }
-  }, [isOpen]);
+  }, [isRegisterOpen]);
 
-  if (!isOpen) return null;
+  if (!isRegisterOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/90 flex justify-center items-center z-50">
-      <div className="bg-white overflow-hidden p-6 rounded-md w-full max-w-2xl overflow-y-auto max-h-[95vh] relative">
+    <div className="fixed inset-0 bg-black/90 select-none flex justify-center items-center z-50">
+      <div className="bg-white overflow-hidden p-6 rounded-md w-full max-w-2xl overflow-y-auto max-h-[95vh] relative animate-in fade-in duration-500">
         <button
           onClick={handleClose}
-          className="absolute top-2 cursor-pointer border border-gray-300 rounded-md p-[2px] right-2 text-gray-400"
+          className="absolute top-2 cursor-pointer border-2 border-gray-300 rounded-md p-[2px] right-2 text-gray-400"
         >
-          <X />
+          <X className="w-6 h-6" />
         </button>
 
         <h2 className="text-xl font-bold text-center mb-2">
@@ -193,7 +195,7 @@ export function RegistrationModal() {
           {step === 1 && (
             <div className="grid md:grid-cols-2 pb-6 gap-6 animate-in fade-in duration-500">
               <div
-                className={`cursor-pointer p-2 rounded-sm border border-gray-300  transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${
+                className={`cursor-pointer p-2 px-5 rounded-sm border border-gray-300  transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${
                   selectedType === "investor"
                     ? "ring-1 ring-emerald-500 bg-emerald-50"
                     : "hover:bg-slate-50"
@@ -210,7 +212,7 @@ export function RegistrationModal() {
                   </span>
                 </div>
                 <div className="text-center space-y-3">
-                  <p className="text-slate-600 text-xl">
+                  <p className="text-slate-600 font-medium text-[18px]">
                     Start investing in premium Nigerian real estate with as
                     little as ₦10,000
                   </p>
@@ -249,8 +251,8 @@ export function RegistrationModal() {
                   </span>
                 </div>
 
-                <div className="text-center space-y-3 text-xl">
-                  <p className="text-slate-600">
+                <div className="text-center space-y-3  ">
+                  <p className="text-slate-600 font-medium text-[18px]">
                     List and tokenize your properties on our blockchain platform
                   </p>
                   <div className="space-y-2 text-sm text-slate-500">
@@ -288,7 +290,10 @@ export function RegistrationModal() {
                   className={errors.fullName ? "border-red-500" : ""}
                 />
                 {errors.fullName && (
-                  <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.fullName}
+                  </p>
                 )}
               </div>
             </div>
@@ -307,7 +312,10 @@ export function RegistrationModal() {
                   className={errors.nin ? "border-red-500" : ""}
                 />
                 {errors.nin && (
-                  <p className="text-red-500 text-sm mt-1">{errors.nin}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.nin}
+                  </p>
                 )}
               </div>
             )}
@@ -323,7 +331,10 @@ export function RegistrationModal() {
                 className={errors.email ? "border-red-500" : ""}
               />
               {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {errors.email}
+                </p>
               )}
             </div>
 
@@ -337,7 +348,10 @@ export function RegistrationModal() {
                 className={errors.phone ? "border-red-500" : ""}
               />
               {errors.phone && (
-                <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {errors.phone}
+                </p>
               )}
             </div>
 
@@ -356,6 +370,7 @@ export function RegistrationModal() {
                   />
                   {errors.businessName && (
                     <p className="text-red-500 text-sm mt-1">
+                      <AlertCircle className="w-4 h-4 mr-1" />
                       {errors.businessName}
                     </p>
                   )}
@@ -400,6 +415,7 @@ export function RegistrationModal() {
                   </div>
                   {errors.governmentId && (
                     <p className="text-red-500 text-sm mt-1">
+                      <AlertCircle className="w-4 h-4 mr-1" />
                       {errors.governmentId}
                     </p>
                   )}
@@ -455,7 +471,7 @@ export function RegistrationModal() {
 
         {/* Action Buttons */}
         <div className="flex justify-between border-gray-300 pt-6 border-t">
-          {step > 1 && !role && (
+          {step > 1 && selectedType && (
             <button
               className="border border-gray-300 py-1 px-3 rounded-md"
               onClick={handleBack}
@@ -486,6 +502,18 @@ export function RegistrationModal() {
               <ArrowRight className="w-4 h-4 ml-2" />
             </button>
           )}
+        </div>
+
+        <div className="text-center mt-6">
+          <p className="text-sm text-slate-600">
+            Already have an account?{" "}
+            <button
+              className="text-emerald-600 cursor-pointer  hover:text-emerald-500 font-medium"
+              onClick={onLoginModal}
+            >
+              Login
+            </button>
+          </p>
         </div>
       </div>
     </div>
