@@ -19,7 +19,7 @@ contract KYCManagerTest is Test {
         // Grant auditor role to auditor
         vm.startPrank(admin);
         kycManager.grantRole(kycManager.AUDITOR_ROLE(), auditor);
-           vm.stopPrank();
+        vm.stopPrank();
 
         console.log("KYCManager deployed at:", address(kycManager));
         console.log("Admin:", admin);
@@ -42,13 +42,13 @@ contract KYCManagerTest is Test {
         KYCManager.KYCData memory data = kycManager.getKYCData(realtor);
         console.log("Current status before resubmission:", uint8(data.status));
         assertEq(data.name, "Pelumi");
-        console.log("Name:", data.name); 
+        console.log("Name:", data.name);
         assertEq(data.email, "AdetoyePelui@email.com");
-         console.log("Email:", data.email); 
+        console.log("Email:", data.email);
         assertEq(data.nin, "123456789");
-         console.log("Nin:", data.nin); 
+        console.log("Nin:", data.nin);
         assertEq(data.phone, "08012345678");
-         console.log("Phone:", data.phone); 
+        console.log("Phone:", data.phone);
         assertEq(uint8(data.status), uint8(KYCManager.KYCStatus.Pending));
         assertEq(data.submittedAt, block.timestamp);
 

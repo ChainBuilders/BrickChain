@@ -9,13 +9,13 @@ contract MockTokenFactory is ITokenFactory {
     function createToken(
         string memory, // _displayName
         string memory, // _displaySymbol
-        uint256,       // _supply
+        uint256, // _supply
         string memory, // _name
         string memory, // _symbol
         string memory, // _propertyURI
-        address,       // _kycManager
-        address,       // _owner
-        address        // _vault
+        address, // _kycManager
+        address, // _owner
+        address // _vault
     ) external override returns (address) {
         lastCreatedToken = address(0x1234); // Mock token address
         return lastCreatedToken;

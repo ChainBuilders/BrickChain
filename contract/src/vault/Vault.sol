@@ -94,7 +94,7 @@ contract Vault is AccessManager {
         address stablecoinAddr,
         uint256 stablecoinAmount,
         address realtor
-    ) external onlyRole(ADMIN_ROLE) nonReentrant {
+    ) external virtual onlyRole(ADMIN_ROLE) nonReentrant {
         PropertyVault storage vault = vaults[propertyId];
 
         require(vault.isActive, "Vault inactive");
@@ -108,7 +108,9 @@ contract Vault is AccessManager {
         vault.unsoldTokens -= tokenAmount;
 
         // Transfer stablecoin from VaultManager to realtor and tokens to investor
-        IERC20(stablecoinAddr).safeTransferFrom(msg.sender, realtor, stablecoinAmount);
+        // IERC20(stablecoinAddr).safeTransfer(realtor, stablecoinAmount);
+
+        // Transfer property tokens to investor
         IERC20(vault.token).safeTransfer(investor, tokenAmount);
 
         emit TokensPurchased(propertyId, investor, tokenAmount, stablecoinAmount);

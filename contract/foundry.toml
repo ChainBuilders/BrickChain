@@ -14,5 +14,7 @@ remappings = [
 solc_version = "0.8.24"
 [rpc_endpoints]
 base = "${BASE_SEPOLIA_RPC_URL}"
+# gas_reports = ["VaultManager", "Vault", "Escrow"]
+
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

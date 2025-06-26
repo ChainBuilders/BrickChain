@@ -28,13 +28,7 @@ contract RegistryTest is Test {
         priceFeed = new MockPriceFeed();
 
         registry = new Registry(
-            admin,
-            address(tokenFactory),
-            0.15 ether,
-            feeRecipient,
-            address(priceFeed),
-            address(kycManager),
-            vault
+            admin, address(tokenFactory), 0.15 ether, feeRecipient, address(priceFeed), address(kycManager), vault
         );
 
         vm.startPrank(admin);
@@ -78,14 +72,7 @@ contract RegistryTest is Test {
         console.log("Realtor ETH balance before registration:", realtor.balance);
 
         // --- Register property ---
-        registry.registerProperty{value: expectedFee}(
-            name,
-            location,
-            totalValue,
-            description,
-            pricePerToken,
-            uri
-        );
+        registry.registerProperty{value: expectedFee}(name, location, totalValue, description, pricePerToken, uri);
 
         console.log("Property registered successfully!");
         console.log("Realtor ETH balance after registration:", realtor.balance);
@@ -111,7 +98,9 @@ contract RegistryTest is Test {
         assertTrue(prop.isActive);
         assertEq(prop.metadataURI, uri);
         assertEq(prop.vault, vault);
-        assertEq(feeRecipientBalanceAfter - feeRecipientBalanceBefore, expectedFee, "Listing fee not transferred correctly");
+        assertEq(
+            feeRecipientBalanceAfter - feeRecipientBalanceBefore, expectedFee, "Listing fee not transferred correctly"
+        );
 
         console.log("All assertions passed!");
         vm.stopPrank();
@@ -154,9 +143,7 @@ contract RegistryTest is Test {
         vm.deal(realtor, providedFee);
 
         vm.expectRevert("Insufficient listing fee");
-        registry.registerProperty{value: providedFee}(
-            "Test", "Loc", totalValue, "Desc", pricePerToken, "ipfs://uri"
-        );
+        registry.registerProperty{value: providedFee}("Test", "Loc", totalValue, "Desc", pricePerToken, "ipfs://uri");
         vm.stopPrank();
     }
 
@@ -202,9 +189,7 @@ contract RegistryTest is Test {
         vm.deal(realtor, expectedFee);
 
         // --- Register property ---
-        registry.registerProperty{value: expectedFee}(
-            "Test", "Loc", totalValue, "Desc", pricePerToken, "ipfs://uri"
-        );
+        registry.registerProperty{value: expectedFee}("Test", "Loc", totalValue, "Desc", pricePerToken, "ipfs://uri");
 
         // --- Toggle status ---
         registry.updatePropertyStatus(1, false);
@@ -229,9 +214,7 @@ contract RegistryTest is Test {
         vm.deal(realtor, expectedFee);
 
         // --- Register property ---
-        registry.registerProperty{value: expectedFee}(
-            "Test", "Loc", totalValue, "Desc", pricePerToken, "ipfs://uri"
-        );
+        registry.registerProperty{value: expectedFee}("Test", "Loc", totalValue, "Desc", pricePerToken, "ipfs://uri");
         vm.stopPrank();
 
         // --- Admin deactivates property ---

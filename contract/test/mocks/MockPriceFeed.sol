@@ -14,13 +14,7 @@ contract MockPriceFeed is AggregatorV3Interface {
         external
         view
         override
-        returns (
-            uint80 roundId,
-            int256 _answer,
-            uint256 startedAt,
-            uint256 updatedAt,
-            uint80 answeredInRound
-        )
+        returns (uint80 roundId, int256 _answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)
     {
         return (0, answer, 0, 0, 0);
     }
@@ -37,18 +31,7 @@ contract MockPriceFeed is AggregatorV3Interface {
         return 1;
     }
 
-    function getRoundData(uint80)
-        external
-        pure
-        override
-        returns (
-            uint80,
-            int256,
-            uint256,
-            uint256,
-            uint80
-        )
-    {
+    function getRoundData(uint80) external pure override returns (uint80, int256, uint256, uint256, uint80) {
         revert("not implemented");
     }
 }
