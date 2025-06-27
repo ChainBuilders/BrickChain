@@ -117,11 +117,9 @@ export function RegistrationModal() {
     resetModal();
 
     if (selectedType === "investor") {
-      //   window.location.href = "/dashboard"
-
-      alert("welcome there investor");
+      window.location.href = "/dashboard";
     } else {
-      //   window.location.href = "/realtor-dashboard"
+      window.location.href = "/realtor-dashboard";
 
       alert("welcome there realtor");
     }
