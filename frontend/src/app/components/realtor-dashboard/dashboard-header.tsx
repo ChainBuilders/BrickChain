@@ -61,7 +61,8 @@ function RealtorWelcome() {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white/80 rounded-md animate-in slide-in-from-left  delay-400"
+            className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white/80 rounded-md animate-in slide-in-from-left"
+            style={{ animationDelay: `${index * 100 + 200}ms` }}
           >
             <div className="p-6">
               <div className="flex items-center justify-between">
