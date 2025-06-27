@@ -2,16 +2,25 @@
 
 import { useModalStore } from "@/stores/modalStore";
 import { LogIn, UserPlus, X } from "lucide-react";
+import { useEffect } from "react";
 
 export function LoginRegisterPrompt() {
   const { isLoginPromptOpen, onLoginModal, onRegisterModal, onClose } =
     useModalStore();
 
+  useEffect(() => {
+    if (isLoginPromptOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [isLoginPromptOpen]);
+
   if (!isLoginPromptOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex select-none items-center justify-center bg-black/80">
-      <div className="bg-white  relative rounded-xl shadow-xl w-full max-w-md p-6 animate-in fade-in duration-500">
+      <div className="bg-white  relative rounded-xl shadow-xl w-[calc(100%-30px)] max-w-md p-6 animate-in fade-in duration-500">
         <button
           onClick={onClose}
           className="absolute top-2 cursor-pointer border-2 border-gray-300 rounded-md p-[2px] right-3 text-gray-400"

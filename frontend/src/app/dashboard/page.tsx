@@ -34,7 +34,7 @@ export default function Dashboard() {
   );
 
   return (
-    <div className="w-full flex flex-col gap-8 min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8 px-4 xl:px-[230px]">
+    <div className="w-full flex flex-col gap-8 min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8 px-4 ">
       <div className="flex flex-col">
         <div className="flex flex-col">
           <h1 className="text-[35px] font-[600]">Welcome Back, {user}! 👋</h1>
@@ -93,7 +93,7 @@ export default function Dashboard() {
           />
         </div>
       </div>
-      <div className="flex flex-col lg:flex-row gap-8 bw-full">
+      <div className="flex flex-col lg:flex-row gap-8 w-full">
         <div className="flex flex-col w-full gap-8">
           <Performance />
           <Properties />
