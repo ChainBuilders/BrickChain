@@ -1,10 +1,24 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import Button from "../ui/Button";
-import { Calendar, Eye, MapPin, Plus } from "lucide-react";
-import Image from "next/image";
+import {
+  Calendar,
+  // Edit,
+  Eye,
+  Filter,
+  MapPin,
+  MoreHorizontal,
+  Plus,
+  Search,
+} from "lucide-react";
+// import Image from "next/image";
 import { cn } from "@/libs/utils";
+import { Input } from "../ui/Input";
 
 function PropertiesListings() {
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
   const myListings = [
     {
       id: 1,
@@ -47,6 +61,12 @@ function PropertiesListings() {
     },
   ];
 
+  const filteredProperties = myListings.filter(
+    (property) =>
+      property.name.toLowerCase().includes(searchTerm) ||
+      property.location.toLowerCase().includes(searchTerm)
+  );
+
   return (
     <div className="border-0 bg-white p-8 rounded-md shadow-lg animate-in slide-in-from-bottom duration-700 delay-300">
       <div className="mb-5">
@@ -57,9 +77,25 @@ function PropertiesListings() {
             Add Property
           </Button>
         </div>
+
+        <div className="flex space-x-4 mt-4 h-12">
+          <div className="relative flex-1  ">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+            <Input
+              placeholder="Search properties..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 h-full"
+            />
+          </div>
+          <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-[16px] hover:bg-gray-200 font-medium transition-all py-1 border border-gray-300 px-3">
+            <Filter className="w-4 h-4 mr-2" />
+            Filter
+          </button>
+        </div>
       </div>
       <div>
-        <div className="space-y-4">
+        {/* <div className="space-y-4">
           {myListings.map((listing, index) => (
             <div
               key={listing.id}
@@ -160,6 +196,91 @@ function PropertiesListings() {
               </div>
             </div>
           ))}
+        </div> */}
+
+        <div>
+          <div className="space-y-4">
+            {filteredProperties.map((property) => (
+              <div
+                key={property.id}
+                className="border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-slate-900 mb-1">
+                      {property.name}
+                    </h3>
+                    <div className="flex items-center text-slate-600 text-sm mb-2">
+                      <MapPin className="w-4 h-4 mr-1" />
+                      {property.location}
+                    </div>
+                    <div className="flex items-center space-x-4 text-sm">
+                      <span className="text-slate-600">
+                        Value: {property.totalValue}
+                      </span>
+                      <span className="text-slate-600">
+                        APY: {property.apy}
+                      </span>
+                      <span className="text-slate-600">
+                        Investors: {property.investors}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <button
+                      className={cn(
+                        "py-1 text-xs font-semibold px-3 rounded-full",
+                        property.status === "Active"
+                          ? "bg-emerald-100 text-emerald-800"
+                          : "bg-orange-100 text-orange-800"
+                      )}
+                    >
+                      {property.status}
+                    </button>
+                    <Button>
+                      <MoreHorizontal className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {property.status === "Active" && (
+                  <div className="mb-3">
+                    <div className="flex justify-between text-sm mb-2 text-slate-600 ">
+                      <span>Funding Progress</span>
+                      <span>{property.funded}%</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div
+                        className="bg-emerald-500 h-full rounded-full transition-all duration-300"
+                        style={{ width: `${property.funded}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 text-sm text-slate-500">
+                    <Calendar className="w-4 h-4" />
+                    <span>
+                      Added {new Date(property.dateAdded).toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  <div className="flex space-x-2">
+                    <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-[16px] hover:bg-gray-200 font-medium transition-all py-1 px-3">
+                      <Eye className="w-4 h-4 mr-1" />
+                      View
+                    </button>
+                    {/* <Button>
+                      <Edit className="w-4 h-4 mr-1" />
+                      Edit
+                    </Button> */}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
