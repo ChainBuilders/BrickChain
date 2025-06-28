@@ -21,7 +21,7 @@ contract WhitelistVaultManager is Script {
         require(vaultManager != address(0), "Invalid VaultManager address");
 
         vm.startBroadcast(uint256(deployerPrivateKey));
-        Escrow(escrow).whitelistAddress(vaultManager, true);
+        Escrow(escrow).updateVaultManager(vaultManager, true);
         console.log("VaultManager whitelisted in Escrow:", vaultManager);
         vm.stopBroadcast();
 
