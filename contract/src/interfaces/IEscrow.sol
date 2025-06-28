@@ -17,7 +17,7 @@ interface IEscrow {
         uint256 indexed propertyId, address indexed investor, address indexed stablecoin, uint256 amount
     );
 
-    /// @notice Emitted when funds are withdrawn to a realtor
+    /// @notice Emitted when funds are withdrawn to a recipient
     event WithdrawToExecuted(
         uint256 indexed propertyId,
         address indexed investor,
@@ -37,6 +37,6 @@ interface IEscrow {
     function deposit(uint256 propertyId, address stablecoin, uint256 amount) external;
     function getDeposit(address investor, uint256 propertyId, address stablecoin) external view returns (uint256);
     function isStablecoinAccepted(address token) external view returns (bool);
-    function withdrawTo(uint256 propertyId, address investor, address stablecoin, uint256 amount, address recipient)
-        external;
+    function withdrawTo(uint256 propertyId, address investor, address stablecoin, uint256 amount, address recipient) external;
+    function updateVaultManager(address manager, bool allowed) external;
 }

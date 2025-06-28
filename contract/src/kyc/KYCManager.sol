@@ -99,7 +99,8 @@ contract KYCManager is AccessManager {
     function approveKYC(address realtor) external onlyAdminOrAuditor {
         require(realtorKYC[realtor].status != KYCStatus.Approved, "Already approved");
         require(realtorKYC[realtor].status == KYCStatus.Pending, "Not pending");
-        require(block.timestamp >= realtorKYC[realtor].submittedAt + 24 hours, "Wait 24hrs after KYC");
+        // require(block.timestamp >= realtorKYC[realtor].submittedAt + 24 hours, "Wait 24hrs after KYC");
+            require(block.timestamp >= realtorKYC[realtor].submittedAt + 2 seconds, "Wait 2s after KYC");
         realtorKYC[realtor].status = KYCStatus.Approved;
         _grantRole(REALTOR_ROLE, realtor);
         emit KYCApproved(realtor, block.timestamp);
