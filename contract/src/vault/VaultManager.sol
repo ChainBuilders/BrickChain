@@ -63,7 +63,7 @@ contract VaultManager is AccessManager {
         emit WithdrawProcessed(propertyId, stablecoin, amount, realtor);
 
         // Step 3: Send property tokens from Vault to investor
-        vault.adminInvest(propertyId, investor, stablecoin, amount, realtor);
+        vault.adminInvest(propertyId, investor, amount, realtor);
 
         emit InvestmentFinalized(propertyId, stablecoin, amount, investor, realtor);
     }

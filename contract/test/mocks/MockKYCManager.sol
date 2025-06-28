@@ -8,6 +8,7 @@ import {IKYCManager} from "../../src/interfaces/IKYCManager.sol";
 contract MockKYCManager is IKYCManager {
     // Mapping to track KYC approval status for each address (used by setKYCApproved)
     mapping(address => bool) public approved;
+    mapping(address => bool) public isBlacklisted;
 
     // Global approval flag (used by setApproval and isKYCApproved)
     bool private globalApproved = true;
@@ -36,6 +37,11 @@ contract MockKYCManager is IKYCManager {
     function getKYCStatus(address) external pure override returns (KYCStatus) {
         return KYCStatus.Approved;
     }
+
+   function setBlacklisted(address user, bool status) external {
+    isBlacklisted[user] = status;
+}
+    
 
     function getKYCData(address realtor)
         external

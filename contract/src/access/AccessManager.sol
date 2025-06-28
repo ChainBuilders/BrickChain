@@ -50,7 +50,7 @@ contract AccessManager is AccessControl, Pausable, ReentrancyGuard {
     // --- MODIFIERS ---
 
     /// @notice Restricts access to users with either admin or auditor role
-    modifier onlyAdminOrAuditor() {
+    modifier onlyAdminOrAuditor() virtual{
         bytes32[] memory roles = new bytes32[](2); // ✅ Properly declare the array
         roles[0] = DEFAULT_ADMIN_ROLE;
         roles[1] = AUDITOR_ROLE;

@@ -3,13 +3,14 @@ pragma solidity ^0.8.24;
 
 import "../tokens/PropertyToken.sol";
 import {ITokenFactory} from "../interfaces/ITokenFactory.sol";
+import "../access/AccessManager.sol";
 
 /// @title TokenFactory
 /// @notice Deploys ERC20 tokens for properties and assigns full ownership to the Realtor
 /// @dev Only callable by the Registry contract
-contract TokenFactory is ITokenFactory {
-    address public immutable registry; // Made immutable since it will be set once in constructor
-
+contract TokenFactory is ITokenFactory{
+    address public registry; // Made immutable since it will be set once in constructor
+      AccessManager public accessManager;
     // event TokenCreated(
     //     address indexed tokenAddress,
     //     string name,
@@ -20,14 +21,34 @@ contract TokenFactory is ITokenFactory {
     //     address indexed owner
     // );
 
-    constructor(address _registry) {
+     /// @notice Constructor sets the registry and access manager addresses
+    constructor(address _registry, address _accessManager) {
         require(_registry != address(0), "Invalid registry address");
+        require(_accessManager != address(0), "Invalid access manager address");
         registry = _registry;
+        accessManager = AccessManager(_accessManager);
     }
 
+       /// @notice Restricts to only the registry contract
     modifier onlyRegistry() {
         require(msg.sender == registry, "Not authorized");
         _;
+    }
+
+   /// @notice Restricts to only admin or auditor roles
+    modifier onlyAdminOrAuditor() {
+        bytes32[] memory roles = new bytes32[](2);
+        roles[0] = accessManager.DEFAULT_ADMIN_ROLE();
+        roles[1] = accessManager.AUDITOR_ROLE();
+        require(accessManager.hasAnyRole(msg.sender, roles), "Not admin or auditor");
+        _;
+    }
+    
+   
+    /// @notice Allows admin or auditor to update the registry address
+    function setRegistry(address _registry) external onlyAdminOrAuditor {
+        require(_registry != address(0), "Invalid registry address");
+        registry = _registry;
     }
 
     /// @notice Deploys a new PropertyToken ERC20 contract

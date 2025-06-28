@@ -61,6 +61,21 @@ contract Vault is AccessManager {
         _;
     }
 
+     /// @notice Restricts to only admin or auditor roles
+    modifier onlyAdminOrAuditor() override {
+        bytes32[] memory roles = new bytes32[](2);
+        roles[0] = DEFAULT_ADMIN_ROLE;
+        roles[1] = AUDITOR_ROLE;
+        require(AccessManager.hasAnyRole(msg.sender, roles), "Not admin or auditor");
+        _;
+    }
+
+ 
+
+    function updateRegistry(address _registry) external onlyAdminOrAuditor {
+    registry = _registry;
+}
+
     /// @notice Registers a new vault for a specific property
     /// @dev Can only be called by the Registry contract to avoid unauthorized property listings
     /// @param propertyId Unique identifier for the property
@@ -85,13 +100,13 @@ contract Vault is AccessManager {
     /// @dev Useful for escrow settlement or off-chain agreement processing
     /// @param propertyId ID of the property whose vault is targeted
     /// @param investor Address receiving the property tokens
-    /// @param stablecoinAddr Address of the stablecoin being transferred
+    // / @param stablecoinAddr Address of the stablecoin being transferred
     /// @param stablecoinAmount Amount of stablecoin used for token purchase (6 decimals)
     /// @param realtor Address to receive the stablecoin payment
     function adminInvest(
         uint256 propertyId,
         address investor,
-        address stablecoinAddr,
+        // address stablecoinAddr,
         uint256 stablecoinAmount,
         address realtor
     ) external virtual onlyRole(ADMIN_ROLE) nonReentrant {
