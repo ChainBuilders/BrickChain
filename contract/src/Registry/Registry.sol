@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol"; // Role-based access control
+
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol"; // Chainlink price feed
 import {RegistryStorage} from "./RegistryStorage.sol"; // Property storage struct
 import {IRegistry} from "./IRegistry.sol"; // Registry interface

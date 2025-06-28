@@ -166,4 +166,8 @@ contract KYCManager is AccessManager {
     function getKYCData(address realtor) external view returns (KYCData memory) {
         return realtorKYC[realtor];
     }
+
+   function setBlacklisted(address realtor, bool status) external onlyAdminOrAuditor {
+    isBlacklisted[realtor] = status;
+}
 }

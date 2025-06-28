@@ -44,7 +44,7 @@ contract MockVault is Vault {
 
     function adminInvest(uint256 propertyId, address investor, address stablecoin, uint256 amount, address realtor)
         external
-        override
+        // override
         onlyRole(ADMIN_ROLE)
         nonReentrant
     {
