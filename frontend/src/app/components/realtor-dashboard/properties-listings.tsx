@@ -15,8 +15,11 @@ import {
 // import Image from "next/image";
 import { cn } from "@/libs/utils";
 import { Input } from "../ui/Input";
+import { useModalStore } from "@/stores/modalStore";
 
 function PropertiesListings() {
+  const onAddPropertyModal = useModalStore((state) => state.onAddPropertyModal);
+
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const myListings = [
@@ -72,10 +75,13 @@ function PropertiesListings() {
       <div className="mb-5">
         <div className="flex space-y-8 md:space-y-0 flex-col  md:flex-row items-center justify-between">
           <h1 className="text-xl font-medium">My Property Listings</h1>
-          <Button className="bg-gradient-to-r w-full md:w-fit  items-center  text-white from-emerald-500 flex justify-center to-teal-600 font-medium hover:to-teal-700">
-            <Plus className="w-4 h-4 mr-2" />
+          <button
+            className="bg-gradient-to-r group py-2 px-4 rounded-md w-full md:w-fit  items-center  text-white from-emerald-500 flex justify-center to-teal-600 font-medium hover:to-teal-700"
+            onClick={onAddPropertyModal}
+          >
+            <Plus className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:rotate-180" />
             Add Property
-          </Button>
+          </button>
         </div>
 
         <div className="flex space-x-4 mt-4 h-12">
