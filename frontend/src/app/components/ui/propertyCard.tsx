@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 type PropertyCardProps = {
   image: string;
@@ -5,12 +6,15 @@ type PropertyCardProps = {
   value: string | number;
   tokens: string | number;
   yieldInfo: string | number;
+  fundingProgress: number;
   minInvestment: string | number;
   status: string;
   rating: number;
+  id: number;
 };
 
 const PropertyCard = ({
+  id,
   image,
   name,
   value,
@@ -18,9 +22,9 @@ const PropertyCard = ({
   yieldInfo,
   minInvestment,
   status,
+  fundingProgress,
   rating,
 }: PropertyCardProps) => {
-
   const percentage = Number(yieldInfo) * 10;
 
   return (
@@ -37,7 +41,7 @@ const PropertyCard = ({
       <div className="w-full space-y-5 pb-4 px-2">
         <div className="flex w-full justify-between px-2 pt-3">
           <h3 className=" font-semibold w-full text-gray-900 flex flex-col ">
-            <span className="md:text-[30px] truncate"> {name}</span>
+            <span className="md:text-[20px] truncate"> {name}</span>
             <span className="text-gray-500 flex space-x-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +62,7 @@ const PropertyCard = ({
             </span>
           </h3>
           <div className="text-[#877512] w-full items-end flex flex-col">
-            <span className="text-[30px] font-[600]  text-gray-900">
+            <span className="text-[20px] font-[600]  text-gray-900">
               {value}
             </span>
             <p className="text-gray-500">Total Value</p>
@@ -79,28 +83,28 @@ const PropertyCard = ({
         <div className="flex flex-col px-2 w-full">
           <div className="flex justify-between  items-center ">
             <div className="bg-gradient-to-r from-[#40c19c] space-x-1 flex to-[#31cc96] text-lg font-[600] bg-clip-text text-transparent">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="#40c19c"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-trending-up-icon lucide-trending-up"
-            >
-              <path d="M16 7h6v6" />
-              <path d="m22 7-8.5 8.5-5-5L2 17" />
-            </svg>
-            <span>{yieldInfo}%</span>
-            <span>APY</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="#40c19c"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-trending-up-icon lucide-trending-up"
+              >
+                <path d="M16 7h6v6" />
+                <path d="m22 7-8.5 8.5-5-5L2 17" />
+              </svg>
+              <span>{yieldInfo}%</span>
+              <span>APY</span>
             </div>
             <div className="text-gray-500 text-lg font-[500] space-x-2">
-              <span className="">{percentage}%</span>
+              <span className="">{fundingProgress}%</span>
               <span>Funded</span>
-              </div>
+            </div>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
             <div
@@ -113,11 +117,14 @@ const PropertyCard = ({
             ></div>
           </div>
         </div>
-        <div className="px-2 w-full">
-
-        <button className="mt-3 bg-gradient-to-r from-[#47d9b0] to-[#1b9067] text-white font-semibold px-4 py-2 rounded-lg w-full transition">
-          Invest Now
-        </button>
+        <div className="px-2 w-full ">
+          <Link
+            key={id}
+            href={`/properties/${id}`}
+            className="mt-3 block bg-gradient-to-r text-center hover:from-emerald-600 hover:to-teal-700 from-emerald-500 to-teal-600 text-white font-semibold px-4 py-2 rounded-lg w-full transition"
+          >
+            Invest Now
+          </Link>
         </div>
       </div>
     </div>
