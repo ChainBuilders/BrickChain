@@ -1,6 +1,12 @@
 import React from "react";
 
-export default function Locations() {
+interface LocationsProps {
+  propertyLocationData: {
+    mapLocation: string;
+  }; 
+}
+
+export default function Locations({ propertyLocationData }: LocationsProps) {
     const map = "https://www.openstreetmap.org/export/embed.html?bbox=3.3915%2C6.4197%2C3.4315%2C6.4397&amp;layer=mapnik"
   return (
     <div
@@ -18,12 +24,12 @@ export default function Locations() {
         </h3>
         <div className="h-64 bg-gradient-to-br from-slate-100 to-blue-100 rounded-lg flex items-center justify-center">
         {/* Live Map Integration using react-leaflet */}
-        {map ? ( // Replace `true` with a prop or state to control map presence
+        {propertyLocationData.mapLocation ? ( // Replace `true` with a prop or state to control map presence
             <>
                 <div className="w-full h-full rounded-lg overflow-hidden">
                     <iframe
                         title="Victoria Island, Lagos Map"
-                        src={map}
+                        src={propertyLocationData.mapLocation}
                         className="w-full h-full border-0"
                         style={{ minHeight: "220px" }}
                         allowFullScreen

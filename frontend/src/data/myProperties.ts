@@ -32,7 +32,7 @@ export const myProperties = [
     change: 10.0,
     tokensOwned: "700 tokens",
     ownershipPercent: 100.0,
-    status: "Active",
+    status: "Pending",
     image: "/duplex3.jpg",
   },
 ];
@@ -77,4 +77,17 @@ export const portfolioAllocation = [
     percentage: 10,
     color : "bg-purple-500"
   },
+];
+
+
+interface BusinessMetric {
+  metric: string;
+  value: string | number;
+}
+
+export const businessMetrics: BusinessMetric[] = [
+  { metric: "This Month's Listings", value: 3 },
+  { metric: "Active Clients", value: 25 },
+  { metric: "Commission Rate", value: "3%" },
+  { metric: "Performance Rating", value: "4.7 (✓)" }
 ];

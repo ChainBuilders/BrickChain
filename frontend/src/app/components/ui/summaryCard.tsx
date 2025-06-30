@@ -1,4 +1,4 @@
-import { TrendingUp } from "lucide-react";
+import { Percent, Star, TrendingUp } from "lucide-react";
 import React from "react";
 
 export default function SummaryCard({
@@ -7,12 +7,16 @@ export default function SummaryCard({
   details,
   apy,
   icon,
+  rating,
+  active,
 }: {
   apy?: string | number;
   topic: string;
   amount: string;
   details?: string;
   icon?: React.ReactNode;
+  rating?: number;
+  active?: number;
 }) {
   const isNegative = typeof apy === "number" && apy < 0;
 
@@ -41,10 +45,24 @@ export default function SummaryCard({
             <span>{apyGrowth()}</span>
           </p>
         )}
-
+        {rating && (
+          <p
+            className={`${
+              isNegative ? "text-red-500" : "text-green-600"
+            } text-start w-full text-[16px] flex space-x-2 font-[600]`}
+          >
+            <Star color={"gold"} />
+            <span>{rating} rating</span>
+          </p>
+        )}
         {details && (
           <p className="text-gray-500 text-sm text-start w-full text-[18px] font-[600]">
             {details}
+          </p>
+        )}
+        {active && (
+          <p className="text-gray-500 text-sm text-start w-full text-[18px] font-[600]">
+            {active}
           </p>
         )}
       </div>
