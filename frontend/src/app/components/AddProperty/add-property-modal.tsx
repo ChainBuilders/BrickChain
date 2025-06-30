@@ -8,7 +8,7 @@ import AddPropertyForm from "./AddPropertyForm";
 export function AddPropertyModal() {
   const { isAddPropertyOpen, onCloseAddPropertyModal } = useModalStore();
   const [currentStep, setCurrentStep] = useState(1);
-  //   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleNextStep = () => {
     setCurrentStep((prev) => Math.min(prev + 1, 5));
@@ -16,6 +16,15 @@ export function AddPropertyModal() {
 
   const handlePreviousStep = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+
+    // Simulate a 2-second delay
+    await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+
+    setIsSubmitting(false);
   };
 
   useEffect(() => {
@@ -150,10 +159,11 @@ export function AddPropertyModal() {
           ) : (
             <button
               type="button"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
               className="ml-auto bg-gradient-to-r  cursor-pointer space-x-2 flex justify-center items-center py-2 px-6 rounded-md from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
             >
-              {/* {isSubmitting ? "Submitting..." : "Submit Property"} */}
-              Submit Property
+              {isSubmitting ? "Submitting..." : "Submit Property"}
             </button>
           )}
         </div>
