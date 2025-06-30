@@ -7,7 +7,16 @@ import AddPropertyForm from "./AddPropertyForm";
 
 export function AddPropertyModal() {
   const { isAddPropertyOpen, onCloseAddPropertyModal } = useModalStore();
-  const [currentStep, setCurrentStep] = useState(5);
+  const [currentStep, setCurrentStep] = useState(1);
+  //   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleNextStep = () => {
+    setCurrentStep((prev) => Math.min(prev + 1, 5));
+  };
+
+  const handlePreviousStep = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+  };
 
   useEffect(() => {
     if (isAddPropertyOpen) {
@@ -38,27 +47,31 @@ export function AddPropertyModal() {
 
         {/* steps */}
         <div className="flex items-center justify-between mt-10 mb-6">
-          {[1, 2, 3, 4, 5].map((step) => (
-            <div key={step} className="flex items-center">
+          {[1, 2, 3, 4, 5].map((step, index) => (
+            <div key={step} className="flex items-center ">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                className={`w-8 h-8 rounded-full z-10 flex items-center flex-shrink-0 justify-center text-sm font-medium ${
                   step <= currentStep
                     ? "bg-emerald-500 text-white"
                     : "bg-slate-200 text-slate-600"
                 }`}
               >
                 {step < currentStep ? (
-                  <CheckCircle className="w-4 h-4" />
+                  <CheckCircle className="w-4 h-4 animate-in fade-in zoom-in duration-300" />
                 ) : (
                   step
                 )}
               </div>
-              {step < 5 && (
-                <div
-                  className={`w-44 -ml-1 transition-all duration-1000 -mr-1 h-1 mx-2 ${
-                    step < currentStep ? "bg-emerald-500" : "c"
-                  }`}
-                />
+              {index < 4 && (
+                <div className=" flex-1  h-1 bg-slate-200  ">
+                  <div
+                    className={`h-full transition-all duration-700 delay-100 ease-in-out origin-left ${
+                      step < currentStep
+                        ? "bg-emerald-500 w-full"
+                        : "bg-slate-200 w-0"
+                    }`}
+                  />
+                </div>
               )}
             </div>
           ))}
@@ -119,7 +132,7 @@ export function AddPropertyModal() {
           <button
             className={`border border-gray-300 rounded-md cursor-pointer flex justify-center  space-x-5 items-center py-2 px-4 rounded-m
                  ${currentStep === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
-            //   onClick={handleNext}
+            onClick={handlePreviousStep}
           >
             <ArrowLeft className="w-4 h-4 ml-2" />
             <span>Previous</span>
@@ -128,7 +141,7 @@ export function AddPropertyModal() {
           {currentStep < 5 ? (
             <button
               type="button"
-              //   onClick={nextStep}
+              onClick={handleNextStep}
               className="ml-auto bg-gradient-to-r  cursor-pointer space-x-2 flex justify-center items-center py-2 px-6 rounded-md from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
             >
               <span> Next</span>
@@ -137,8 +150,6 @@ export function AddPropertyModal() {
           ) : (
             <button
               type="button"
-              //   onClick={handleSubmit}
-              //   disabled={isSubmitting}
               className="ml-auto bg-gradient-to-r  cursor-pointer space-x-2 flex justify-center items-center py-2 px-6 rounded-md from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
             >
               {/* {isSubmitting ? "Submitting..." : "Submit Property"} */}
