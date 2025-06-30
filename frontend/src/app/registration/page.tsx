@@ -1,5 +1,5 @@
 import React from "react";
-import { RegistrationModal } from "../components/auth/registration-modal";
+import { RegistrationModal } from "../../components/auth/registration-modal";
 
 function page() {
   return <RegistrationModal />;

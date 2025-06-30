@@ -1,5 +1,5 @@
 import React from "react";
-import RealtorLayout from "../components/realtor-dashboard/Layout";
+import RealtorLayout from "../../components/realtor-dashboard/Layout";
 
 function page() {
   return <RealtorLayout />;

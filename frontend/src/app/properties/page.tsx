@@ -1,7 +1,7 @@
 import React from "react";
 import { properties } from "@/data/propertiesData";
-import PropertyCard from "../components/ui/propertyCard";
-import SearchBar from "../components/ui/searchBar";
+import PropertyCard from "../../components/ui/propertyCard";
+import SearchBar from "../../components/ui/searchBar";
 
 export default function Properties() {
   return (

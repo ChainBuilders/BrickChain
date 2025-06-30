@@ -100,11 +100,11 @@ export default function PropertyContent({ property, properties }: { property: an
             </button>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 w-full">
             {properties &&
               properties
                 .filter((p) => p.id !== property.id)
-                .slice(0, 3)
+                .slice(0, 4)
                 .map((similar) => (
                   <PropertyCard
                     key={similar.id}

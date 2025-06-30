@@ -1,7 +1,7 @@
   
 import { properties } from "@/data/propertiesData";
 import { notFound } from "next/navigation";
-import PropertyContent from "@/app/components/otherPages/propertyRoutContent";
+import PropertyContent from "@/components/otherPages/propertyRoutContent";
 
 export default async function PropertyPage({
   params,
