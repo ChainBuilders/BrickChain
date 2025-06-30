@@ -1,0 +1,28 @@
+import React from "react";
+import RealtorWelcome from "./dashboard-header";
+import Performance from "../dashboard/performance";
+import PropertiesListings from "./properties-listings";
+import QuickAction from "./actions-card";
+import Activities from "./Activities";
+import PerformanceSummary from "./PerformanceSummary";
+
+function RealtorLayout() {
+  return (
+    <div className="container mx-auto px-4 sm:px-6 lg:px-4 py-8">
+      <RealtorWelcome />
+      <main className="grid lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-8">
+          <Performance />
+          <PropertiesListings />
+        </div>
+        <div className="space-y-8">
+          <QuickAction />
+          <Activities />
+          <PerformanceSummary/>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default RealtorLayout;

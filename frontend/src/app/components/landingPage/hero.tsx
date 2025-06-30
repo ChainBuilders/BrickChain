@@ -1,8 +1,15 @@
+"use client";
+
+
 import React from "react";
 import Button from "../ui/Button";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { useModalStore } from "@/stores/modalStore";
 
 export default function Hero() {
+  const onLoginModal = useModalStore((state) => state.onLoginPrompt);
+
   return (
     <div
       className={
@@ -22,10 +29,12 @@ export default function Hero() {
         and earn yeild all on blockChain
       </p>
       <div className="mt-8 flex flex-col md:flex-row items-center  space-x-0 md:space-x-4 space-y-4 md:space-y-0">
-        <Button className="bg-gradient-to-r hover:cursor-pointer from-[#34b792] w-[180px] to-[#328b79] lg:h-[60px] text-white lg:w-[220px] text-[20px] rounded-sm justify-center flex items-center space-x-2">
-          <p>Get Started</p>
-          <ArrowRight color="white" size={20} />
-        </Button>
+        <Link onClick={onLoginModal} href="">
+          <Button className="bg-gradient-to-r hover:cursor-pointer from-[#34b792] w-[180px] to-[#328b79] lg:h-[60px] text-white lg:w-[220px] text-[20px] rounded-sm justify-center flex items-center space-x-2">
+            <span>Get Started</span>
+            <ArrowRight color="white" size={20} />
+          </Button>
+        </Link>
         <Button className="bg-white hover:cursor-pointer lg:h-[60px] w-[180px] lg:w-[220px] text-[20px] justify-center rounded-sm flex items-center space-x-2">
           <p className="text-[#1C5C4F]">Learn More</p>
           <ArrowRight color="#1C5C4F" size={20} />

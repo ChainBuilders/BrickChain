@@ -28,10 +28,10 @@ export default function SummaryCard({
   };
 
   return (
-    <div className="w-full md:max-w-[400px] bg-white space-x-2 justify-between items-center shadow-md hover:scale-105 rounded-2xl p-4 flex   hover:shadow-lg transition">
+    <div className="w-full md:max-w-[400px] bg-white space-x-2 justify-between items-center shadow-md hover:scale-105 rounded-md p-4 flex   hover:shadow-lg transition">
       <div className="flex flex-col ">
         <h3 className="text-[16px] font-semibold text-[#686868]">{topic}</h3>
-        <p className="text-[#1d1d1c] font-[600] text-[26px] text-start">
+        <p className="text-[#1d1d1c] font-[600] text-[20px] text-start">
           {amount}
         </p>
 
