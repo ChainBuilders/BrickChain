@@ -115,6 +115,7 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
     // Geolocation
     latitude: "",
     longitude: "",
+    accuracy: "",
     locationMethod: "",
 
     // Documents
@@ -122,6 +123,82 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
     documents: [],
     documentTypes: [],
   });
+
+  function accuracyToZoom(accuracyMeters: number, latitude: number): number {
+  // Calculate the earth’s circumference at this latitude
+  const earthCircumference = 40075017 * Math.cos((latitude * Math.PI) / 180);
+  // Total pixels across the world map at zoom level 21 (256px tile × 2^21 tiles)
+  const worldPixels = 256 * 2 ** 21;
+  // Meters per pixel at zoom 21
+  const metersPerPixelAt21 = earthCircumference / worldPixels;
+
+  // We want the accuracy circle to span roughly half the viewport width
+  const targetPixels = window.innerWidth / 2;
+  // Required meters-per-pixel to visualize that accuracy
+  const requiredMpp = accuracyMeters / targetPixels;
+
+  // Solve for zoom: metersPerPixelAtZ = metersPerPixelAt21 * 2^(21 - Z)
+  // ⇒ 2^(21 - Z) = metersPerPixelAtZ / metersPerPixelAt21
+  // ⇒ 21 - Z = log2(metersPerPixelAtZ / metersPerPixelAt21)
+  // ⇒ Z = 21 - log2(metersPerPixelAtZ / metersPerPixelAt21)
+  const zoom = 21 - Math.log2(requiredMpp / metersPerPixelAt21);
+
+  // Clamp into valid Google Maps zoom range
+  return Math.max(0, Math.min(21, Math.round(zoom)));
+}
+
+  const getCurrentLocation = async () => {
+  setGettingLocation(true);
+
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by this browser.");
+    setGettingLocation(false);
+    return;
+  }
+
+  // 1️⃣ Check permission state (if supported)
+  if (navigator.permissions) {
+    try {
+      const status = await navigator.permissions.query({ name: "geolocation" });
+      if (status.state === "denied") {
+        alert(
+          "Location access has been blocked. Please enable it in your browser settings."
+        );
+        setGettingLocation(false);
+        return;
+      }
+      // If status.state is "prompt" or "granted", we can proceed
+    } catch {
+      // Permissions API can throw in insecure origins; ignore and proceed
+    }
+  }
+
+  // 2️⃣ Now actually request position (this will trigger the browser prompt if needed)
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      setPropertyData((prev) => ({
+        ...prev,
+        latitude: position.coords.latitude.toString(),
+        longitude: position.coords.longitude.toString(),
+        locationMethod: "GPS",
+      }));
+      setGettingLocation(false);
+    },
+    (error) => {
+      console.error("Error getting location:", error);
+      alert(
+        "Unable to get your location. Please enter coordinates manually."
+      );
+      setGettingLocation(false);
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 60000,
+    }
+  );
+};
+
 
   const handleInputChange = (
     field: keyof PropertyData,
@@ -133,6 +210,24 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
+
+  const handleFeatureToggle = (feature: string) => {
+    setPropertyData((prev) => ({
+      ...prev,
+      features: prev.features.includes(feature)
+        ? prev.features.filter((f) => f !== feature)
+        : [...prev.features, feature],
+    }))
+  }
+
+    const handleDocumentTypeToggle = (docType: string) => {
+    setPropertyData((prev) => ({
+      ...prev,
+      documentTypes: prev.documentTypes.includes(docType)
+        ? prev.documentTypes.filter((d) => d !== docType)
+        : [...prev.documentTypes, docType],
+    }))
+  }
 
   switch (currentStep) {
     case 1:
@@ -510,7 +605,7 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                 <div className="flex gap-4">
                   <button
                     type="button"
-                    // onClick={getCurrentLocation}
+                    onClick={getCurrentLocation}
                     disabled={gettingLocation}
                     className="flex items-center bg-black/80 hover:bg-black/70 text-white py-2 px-5 rounded-md cursor-pointer "
                   >
@@ -582,7 +677,13 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                       <button
                         type="button"
                         onClick={() => {
-                          const url = `https://www.google.com/maps?q=${propertyData.latitude},${propertyData.longitude}`;
+                          const lat = parseFloat(propertyData.latitude);
+                          const lng = parseFloat(propertyData.longitude);
+                          const acc = parseFloat(propertyData.accuracy || "0");
+                          // derive a zoom level from accuracy
+                          const zoom = accuracyToZoom(acc, lat);
+                          // open Google Maps centered at lat/lng with that zoom
+                          const url = `https://www.google.com/maps/@${lat},${lng},${zoom}z`;
                           window.open(url, "_blank");
                         }}
                       >
@@ -674,7 +775,7 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                   </div>
                 </div>
 
-                <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                <div className="border-2 border-dashed mt-10 border-slate-300 rounded-lg p-6 text-center">
                   <FileText className="w-12 h-12 text-slate-400 mx-auto mb-4" />
                   <p className="text-slate-600 mb-2">Upload legal documents</p>
                   <p className="text-sm text-slate-500 mb-4">
