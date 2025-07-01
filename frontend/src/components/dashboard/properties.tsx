@@ -18,24 +18,20 @@ interface Property {
 }
 
 interface PropertiesProps {
-  user: string;
   propertyData: Property[];
 }
 
-export default function Properties({ user, propertyData }: PropertiesProps) {
+export default function Properties({  propertyData }: PropertiesProps) {
   return (
     <div className="w-full bg-white rounded-lg shadow-lg">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center md:justify-between flex-col md:flex-row gap-3 pt-3">
         <h1 className="font-semibold tracking-tight text-xl">My Properties</h1>
         <button
-          className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-white h-10 font-medium outline-none bg-gradient-to-r ${
-            user === "realtor"
-              ? "from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"
-              : "from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
-          }`}
+          className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-white h-10 font-medium outline-none bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700
+          `}
         >
           <Plus color="white" />
-          {user === "realtor" ? <span>Add Property</span> : <span>Invest More</span>}
+           <span>Invest More</span>
         </button>
       </div>
 
@@ -43,9 +39,9 @@ export default function Properties({ user, propertyData }: PropertiesProps) {
         <div className="space-y-4">
           {propertyData &&
             propertyData.slice(0, 3).map((items) => (
-              <Link key={items.id} href={`/properties/${items.id}`}>
+              <Link key={items.id} href={`/property/${items.id}`}>
                 <div className="border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-start space-x-4">
+                  <div className="flex md:items-start flex-col md:flex-row space-x-4">
                     <Image
                       src={items.image}
                       alt=""
@@ -75,7 +71,7 @@ export default function Properties({ user, propertyData }: PropertiesProps) {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                         <div>
                           <p className="text-lg text-slate-500">Invested</p>
                           <p className="font-semibold text-slate-900">
@@ -113,11 +109,7 @@ export default function Properties({ user, propertyData }: PropertiesProps) {
                         </div>
                         <div className="w-full h-[8px] rounded-full bg-stone-200">
                           <div
-                            className={`h-full ${
-                              user === "realtor"
-                                ? "bg-black"
-                                : "bg-emerald-500"
-                            } rounded-full transition-all duration-300`}
+                            className={`h-full bg-emerald-500 rounded-full transition-all duration-300`}
                             role="progressbar"
                             aria-valuenow={items.ownershipPercent}
                             aria-valuemin={0}

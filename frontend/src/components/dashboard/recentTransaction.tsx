@@ -11,12 +11,11 @@ interface Transaction {
 }
 
 interface RecentTransactionProps {
-  user: any;
   data: any;
 }
 
-export default function RecentTransaction({ user, data }: RecentTransactionProps) {
-  const isRealtor = user === 'realtor';
+export default function RecentTransaction({  data }: RecentTransactionProps) {
+ 
 
   return (
     <div className="w-full bg-white rounded-lg shadow-lg">
@@ -25,24 +24,7 @@ export default function RecentTransaction({ user, data }: RecentTransactionProps
       </div>
       <div className="p-6 pt-0">
         <div className="space-y-4">
-          {isRealtor
-            ? data?.map((item: any, index: number) => (
-                <div key={index} className="flex items-center justify-between py-2">
-                  <div className="flex items-center space-x-3">
-                    <span className="p-2 rounded-full bg-[#cbebff]">
-                      <Activity />
-                    </span>
-                    <div>
-                      <p className="text-md font-bold text-slate-900">{item.type}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-md text-slate-500">{item.title}</p>
-                    <p className="text-md text-slate-500">{item.date}</p>
-                  </div>
-                </div>
-              ))
-            : recentTransactions?.map((transaction: Transaction, index: number) => (
+          { recentTransactions?.map((transaction: Transaction, index: number) => (
                 <div key={index} className="flex items-center justify-between py-2">
                   <div className="flex items-center space-x-3">
                     <span

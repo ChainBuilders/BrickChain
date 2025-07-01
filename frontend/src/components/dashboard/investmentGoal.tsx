@@ -6,11 +6,9 @@ import {
 } from "lucide-react";
 import React from "react";
 
-interface InvestmentGoalCardProps {
-  user: string; 
-}
 
-export default function InvestmentGoalCard({ user }: InvestmentGoalCardProps) {
+
+export default function InvestmentGoalCard() {
   const values: string[] = ["₦5,000,000", "₦100,000", "Moderate", "3-5 Years"];
 
   return (

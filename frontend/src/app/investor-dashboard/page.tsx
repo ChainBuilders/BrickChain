@@ -1,32 +1,15 @@
 import { redirect } from "next/navigation";
-import SummaryCard from "../components/ui/summaryCard";
-import {
-  Activity,
-  ArrowUpRight,
-  ArrowDownRight,
-  DollarSign,
-  Download,
-  Eye,
-  MapPin,
-  Plus,
-  TrendingUp,
-  Wallet,
-  Clock3,
-} from "lucide-react";
-import { listings } from "@/data/listing";
-import {
-  myProperties,
-  recentTransactions,
-  portfolioAllocation,
-} from "@/data/myProperties";
+import SummaryCard from "../../components/ui/summaryCard";
+import { DollarSign, TrendingUp, Wallet } from "lucide-react";
+import { myProperties } from "@/data/myProperties";
 import { properties } from "@/data/propertiesData";
 import Image from "next/image";
-import Performance from "../components/dashboard/performance";
-import Properties from "../components/dashboard/properties";
-import QuickAction from "../components/dashboard/quickAction";
-import RecentTransaction from "../components/dashboard/recentTransaction";
-import PortfolioAllocation from "../components/dashboard/portfolioAllocation";
-import InvestmentGoalCard from "../components/dashboard/investmentGoal";
+import Performance from "../../components/dashboard/performance";
+import Properties from "../../components/dashboard/properties";
+import QuickAction from "../../components/dashboard/quickAction";
+import RecentTransaction from "../../components/dashboard/recentTransaction";
+import PortfolioAllocation from "../../components/dashboard/portfolioAllocation";
+import InvestmentGoalCard from "../../components/dashboard/investmentGoal";
 
 export default function Dashboard() {
   const user = { name: "tali", state: "realtor" };
@@ -59,27 +42,27 @@ export default function Dashboard() {
     },
   ];
 
-  const property = properties.map(properties => properties)
+  const property = properties.map((properties) => properties);
 
   const simplifiedProperties = property.map((p) => ({
-  id: p.id,
-  name: p.name,
-  location: p.location,
-  status: p.status,
-  image: p.images[0],
-  invested: p.financials.purchasePrice,
-  currentValue: p.totalValue,
-  monthlyIncome: p.financials.monthlyIncome,
-  change: 8.5, 
-  tokensOwned: `${p.totalTokens - p.availableTokens}`,
-  ownershipPercent: Math.round(((p.totalTokens - p.availableTokens) / p.totalTokens) * 100),
-}));
+    id: p.id,
+    name: p.name,
+    location: p.location,
+    status: p.status,
+    image: p.images[0],
+    invested: p.financials.purchasePrice,
+    currentValue: p.totalValue,
+    monthlyIncome: p.financials.monthlyIncome,
+    change: 8.5,
+    tokensOwned: `${p.totalTokens - p.availableTokens}`,
+    ownershipPercent: Math.round(
+      ((p.totalTokens - p.availableTokens) / p.totalTokens) * 100
+    ),
+  }));
 
-
-  const isRealtor = user.state === "realtor";
 
   return (
-    <div className="w-full flex flex-col gap-8 min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8 px-4 ">
+    <div className="w-full  flex flex-col gap-8 min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8 px-4  ">
       <div className="flex flex-col">
         <div className="flex flex-col">
           <h1 className="text-[35px] font-[600]">
@@ -90,13 +73,11 @@ export default function Dashboard() {
           </p>
         </div>
       </div>
-      <div className="flex flex-col lg:flex-row gap-4 w-full">
-        <div className="flex flex-col justify-center items-center xl:flex-row gap-4 w-full">
-          <SummaryCard
-            topic={isRealtor ? "Total Listings" : "Total Portfolio Value"}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <SummaryCard
+            topic={ "Total Portfolio Value"}
             amount="₦1,000,000"
-            apy={!isRealtor? 16.67 : ""}
-            active={isRealtor ? 5 : undefined}
+            apy={16.67 }
             icon={
               <span className="p-4 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center ">
                 {" "}
@@ -105,10 +86,10 @@ export default function Dashboard() {
             }
           />
           <SummaryCard
-            topic={isRealtor ? "Total Commissions" : "Total Invested"}
+            topic={"Total Invested"}
             amount="₦2,100,000"
-            apy={isRealtor ? 16.5 : undefined}
-            details={!isRealtor ? "Across 8 Properties" : undefined}
+            
+            details={"Across 8 Properties"}
             icon={
               <span className="p-4 rounded-full w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center ">
                 {" "}
@@ -116,12 +97,10 @@ export default function Dashboard() {
               </span>
             }
           />
-        </div>
-        <div className="flex flex-col justify-center items-center xl:flex-row gap-4 w-full">
-          <SummaryCard
-            topic={isRealtor ? "Montly Investment" : "Monthly Income"}
+         <SummaryCard
+            topic={"Monthly Income"}
             amount="₦45,000"
-            details={isRealtor? "This Month":"From rental yields"}
+            details={"From rental yields"}
             icon={
               <span className="p-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center ">
                 {" "}
@@ -130,10 +109,9 @@ export default function Dashboard() {
             }
           />
           <SummaryCard
-            topic={isRealtor ? "Total Investment" : "Total Returns"}
+            topic={"Total Returns"}
             amount="₦350,000"
-            apy={!isRealtor? 16.67 : ""}
-            rating={isRealtor? 4.7: undefined}
+            apy={16.67}
             icon={
               <span className="p-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center ">
                 {" "}
@@ -141,24 +119,26 @@ export default function Dashboard() {
               </span>
             }
           />
-        </div>
+       
       </div>
       <div className="flex flex-col lg:flex-row gap-8 w-full">
         <div className="flex flex-col w-full gap-8">
-          <Performance user={user.state} />
-          <Properties propertyData={simplifiedProperties} user={user.state}/>
+          {/* src/app/components */}
+          <Performance />
+
+          <Properties propertyData={simplifiedProperties}  />
         </div>
         <div className="space-y-6 w-full lg:w-auto gap-8">
-          <QuickAction user={user.state} />
+          <QuickAction />
           {/* for realtor is recent activities */}
-          <RecentTransaction user={user.state} data={recentActivities} />
+          <RecentTransaction data={recentActivities} />
 
           {/* portfolio allocation as bussiness matrix on realtor dashboard */}
-          <PortfolioAllocation user={user.state} />
+          <PortfolioAllocation />
 
           {/* hides when on realtors dashboard */}
           <div className={`${user.state === "realtor" ? "hidden" : "block"}`}>
-            <InvestmentGoalCard user="realtor" />
+            <InvestmentGoalCard />
           </div>
         </div>
       </div>

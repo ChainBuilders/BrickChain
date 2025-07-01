@@ -35,6 +35,7 @@ export default function NavBar() {
           {links.map((item, index) => {
             const path =
               item === "Home" ? "/" : `/${item.toLowerCase().replace(" ", "")}`;
+              item ==="Dashboard" ? "/investor-dashboard" : "";
             const isActive = pathname === path;
 
             return (

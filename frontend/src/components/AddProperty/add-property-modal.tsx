@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Building, CheckCircle, X } from "lucide-react";
 import { useModalStore } from "@/stores/modalStore";
-import AddPropertyForm from "./AddPropertyForm";
+import AddPropertyForm from "@/components/AddProperty/AddPropertyForm";
 
 export function AddPropertyModal() {
   const { isAddPropertyOpen, onCloseAddPropertyModal } = useModalStore();
