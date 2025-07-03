@@ -18,10 +18,18 @@ export async function POST(request: Request) {
 
     const { userData } = await request.json();
     
-    // Validate required fields
+    // Validate required fields including userType
     if (!userData?.id || !userData?.email || !userData?.userType) {
       return NextResponse.json(
         { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    // Validate userType is either 'investor' or 'realtor'
+    if (!['investor', 'realtor'].includes(userData.userType)) {
+      return NextResponse.json(
+        { error: "Invalid user type" },
         { status: 400 }
       );
     }
@@ -41,7 +49,7 @@ export async function POST(request: Request) {
         id: userData.id,
         email: userData.email,
         full_name: userData.fullName,
-        user_type: userData.userType,
+        user_type: userData.userType, // Store the user type
         nin: userData.nin,
         phone: userData.phone,
         business_name: userData.businessName,

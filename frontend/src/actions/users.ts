@@ -7,9 +7,14 @@ export const createAccountAction = async (formData: FormData) => {
   try {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const userType = formData.get("userType") as "investor" | "realtor" | null;
 
     if (!email || !password) {
       throw new Error("Email and password are required");
+    }
+
+    if (!userType) {
+      throw new Error("User type is required");
     }
 
     const { auth } = createSupabaseClient();
@@ -21,11 +26,10 @@ export const createAccountAction = async (formData: FormData) => {
       email,
       password,
       options: {
-        // This should match your Supabase config
         emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
-        // Attempt to skip confirmation (must be enabled in Supabase settings)
         data: {
           signup_method: "email",
+          user_type: userType, // Store user type in metadata
           registered_at: new Date().toISOString()
         }
       }
@@ -38,20 +42,18 @@ export const createAccountAction = async (formData: FormData) => {
       throw error;
     }
 
-    // Return all relevant data
     return { 
       errorMessage: null, 
       userId: data.user?.id,
       email: data.user?.email,
-      session: data.session 
+      session: data.session,
+      userType // Return the user type
     };
   } catch (error) {
     return { errorMessage: getErrorMessage(error) };
   }
 };
 
-
-// In your login action
 export const loginAction = async (formData: FormData) => {
   try {
     const email = formData.get("email") as string;
@@ -63,17 +65,7 @@ export const loginAction = async (formData: FormData) => {
 
     const { auth } = createSupabaseClient();
 
-    // First check if user exists (alternative method)
-    const { data: { users }, error: userError } = await auth.admin.listUsers();
-    if (userError) throw userError;
-    
-    const userExists = users.some(u => u.email === email);
-    if (!userExists) {
-      throw new Error("No account found with this email");
-    }
-
-    // Then attempt login
-    const { error } = await auth.signInWithPassword({
+    const { data, error } = await auth.signInWithPassword({
       email,
       password,
     });
@@ -88,23 +80,24 @@ export const loginAction = async (formData: FormData) => {
       throw error;
     }
 
-    return { errorMessage: null };
+    // Get user type from metadata
+    const userType = data.user?.user_metadata?.user_type as "investor" | "realtor" | undefined;
+
+    return { 
+      errorMessage: null,
+      userType: userType || null 
+    };
   } catch (error) {
     return { errorMessage: getErrorMessage(error) };
   }
 };
 
-
 export const signOutAction = async () => {
   try {
     await protectRoute();
-
     const { auth } = createSupabaseClient();
-
     const { error } = await auth.signOut();
-
     if (error) throw error;
-
     return { errorMessage: null };
   } catch (error) {
     return { errorMessage: getErrorMessage(error) };

@@ -42,7 +42,8 @@ export function RegistrationModal() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-const router = useRouter()
+  const router = useRouter();
+
   const resetModal = () => {
     setStep(1);
     setSelectedType(role);
@@ -113,20 +114,21 @@ const router = useRouter()
     return Object.keys(newErrors).length === 0;
   };
 
-const handleSubmit = async () => {
- 
+ const handleSubmit = async () => {
+  if ( !selectedType) return;
 
   setIsPending(true);
   try {
     const form = new FormData();
     form.append("email", formData.email);
     form.append("password", formData.password);
+    form.append("userType", selectedType); // Add user type to form data
 
-    // 1. Create or verify account
+    // Create account
     const { errorMessage, userId } = await createAccountAction(form);
     if (errorMessage) throw new Error(errorMessage);
 
-    // 2. Sign in to get session
+    // Sign in
     const { data: { session }, error: signInError } = 
       await supabase.auth.signInWithPassword({
         email: formData.email,
@@ -135,7 +137,7 @@ const handleSubmit = async () => {
 
     if (signInError || !session) throw signInError || new Error("Login failed");
 
-    // 3. Save additional user data
+    // Save additional user data
     const response = await fetch("/api/users", {
       method: "POST",
       headers: {
@@ -157,7 +159,12 @@ const handleSubmit = async () => {
 
     if (!response.ok) throw new Error("Profile save failed");
 
-    router.push("/investor-dashboard");
+    // Redirect based on user type
+    const dashboardPath = selectedType === "realtor" 
+      ? "/realtor-dashboard" 
+      : "/investor-dashboard";
+    
+    router.push(dashboardPath);
     toast.success("Registration complete!");
   } catch (error) {
     toast.error(getErrorMessage(error));
@@ -165,7 +172,7 @@ const handleSubmit = async () => {
     setIsPending(false);
   }
 };
-
+  
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
 

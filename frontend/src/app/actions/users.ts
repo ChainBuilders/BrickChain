@@ -1,29 +1,29 @@
-
 import { getErrorMessage } from "@/libs/utils";
 import { createSupabaseClient } from "@/auth/server";
-export const createAccountAction = async (formData: FormData) => {
+
+export const createAccountAction = async (credentials: {
+  email: string;
+  password: string;
+  userType: string;
+}) => {
   try {
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    const { auth } = createSupabaseClient();
 
-    const  auth  = createSupabaseClient();
-
-    // Create user account
-    const { data, error } = await auth.auth.signUp({
-      email,
-      password,
+    // Create user account with user type in metadata
+    const { data, error } = await auth.signUp({
+      email: credentials.email,
+      password: credentials.password,
       options: {
-        // Skip email verification
         emailRedirectTo: `${location.origin}/auth/callback`,
         data: {
           signup_method: "email",
+          user_type: credentials.userType // Add user type to metadata
         }
       }
     });
 
     if (error) throw error;
 
-    // Return both auth data and user ID
     return { 
       errorMessage: null, 
       userId: data.user?.id,
@@ -33,4 +33,3 @@ export const createAccountAction = async (formData: FormData) => {
     return { errorMessage: getErrorMessage(error) };
   }
 };
-
