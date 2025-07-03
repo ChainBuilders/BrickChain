@@ -4,6 +4,7 @@ import "./globals.css";
 import NavBar from "../components/landingPage/navBar";
 import FooterSection from "../components/landingPage/footer";
 import { AddPropertyModal } from "../components/AddProperty/add-property-modal";
+import { AuthProvider } from "@/context/authContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,10 +31,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <AuthProvider >
         <NavBar />
         {children}
         <FooterSection />
         <AddPropertyModal />
+        </AuthProvider>
       </body>
     </html>
   );
