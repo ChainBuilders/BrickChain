@@ -10,8 +10,8 @@ function RealtorLayout() {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-4 py-8">
       <RealtorWelcome />
-      <main className="grid lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
+      <main className=" lg:grid lg:grid-cols-3 space-y-8 lg:space-y-0 gap-8">
+        <div className="lg:col-span-2 w-full space-y-8">
           <Performance />
           <PropertiesListings />
         </div>

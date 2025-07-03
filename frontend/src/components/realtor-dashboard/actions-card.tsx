@@ -38,7 +38,7 @@ function QuickAction() {
   ];
 
   return (
-    <div className="border-0 bg-white p-6 rounded-md shadow-lg animate-in slide-in-from-right duration-700 delay-100">
+    <div className="border-0 bg-white p-3 md:p-6 rounded-md shadow-lg animate-in slide-in-from-right duration-700 delay-100">
       <div>
         <h1 className="text-xl font-semibold mb-6">Quick Actions</h1>
       </div>
