@@ -6,14 +6,22 @@ import {
   ArrowRight,
   Building2,
   CheckCircle,
+  Loader2,
   Upload,
   Users,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { startTransition, use, useEffect, useState } from "react";
 import { Input } from "../ui/Input";
 import Label from "../ui/Labal";
+import { createAccountAction } from "@/actions/users";
+import router from "next/router";
+import toast from "react-hot-toast";
+import { createSupabaseClient } from "@/auth/client";
+import { getErrorMessage } from "@/libs/utils";
+import { useRouter } from 'next/navigation';
 
+const supabase = createSupabaseClient();
 export function RegistrationModal() {
   const { isRegisterOpen, onCloseRegisterModal, onLoginModal, role } =
     useModalStore();
@@ -21,18 +29,20 @@ export function RegistrationModal() {
     "investor" | "realtor" | null
   >(role);
   const [step, setStep] = useState(role ? 2 : 1);
+  const [isPending, setIsPending] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     nin: "",
     email: "",
     phone: "",
+    password: "",
     businessName: "",
     governmentId: null as File | null,
     companyDocument: null as File | null,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-
+const router = useRouter()
   const resetModal = () => {
     setStep(1);
     setSelectedType(role);
@@ -42,6 +52,7 @@ export function RegistrationModal() {
       nin: "",
       email: "",
       phone: "",
+      password: "",
       businessName: "",
       governmentId: null,
       companyDocument: null,
@@ -102,28 +113,58 @@ export function RegistrationModal() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
-    if (!validateForm()) return;
+const handleSubmit = async () => {
+ 
 
-    const userData = {
-      userType: selectedType,
-      ...formData,
-      registered: true,
-      registeredTime: new Date().toISOString(),
-    };
+  setIsPending(true);
+  try {
+    const form = new FormData();
+    form.append("email", formData.email);
+    form.append("password", formData.password);
 
-    console.log(userData);
+    // 1. Create or verify account
+    const { errorMessage, userId } = await createAccountAction(form);
+    if (errorMessage) throw new Error(errorMessage);
 
-    resetModal();
+    // 2. Sign in to get session
+    const { data: { session }, error: signInError } = 
+      await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password
+      });
 
-    if (selectedType === "investor") {
-      window.location.href = "/dashboard";
-    } else {
-      window.location.href = "/realtor-dashboard";
+    if (signInError || !session) throw signInError || new Error("Login failed");
 
-      alert("welcome there realtor");
-    }
-  };
+    // 3. Save additional user data
+    const response = await fetch("/api/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify({
+        userData: {
+          id: session.user.id,
+          email: formData.email,
+          userType: selectedType,
+          fullName: formData.fullName,
+          nin: formData.nin,
+          phone: formData.phone,
+          businessName: formData.businessName
+        }
+      }),
+    });
+
+    if (!response.ok) throw new Error("Profile save failed");
+
+    router.push("/investor-dashboard");
+    toast.success("Registration complete!");
+  } catch (error) {
+    toast.error(getErrorMessage(error));
+  } finally {
+    setIsPending(false);
+  }
+};
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -237,7 +278,7 @@ export function RegistrationModal() {
                     ? "ring-1 ring-blue-500 bg-blue-50"
                     : "hover:bg-slate-50"
                 }`}
-                onClick={() => setSelectedType("realtor")}
+                // onClick={() => setSelectedType("realtor")}
               >
                 <div className="text-center pb-4">
                   <div className="w-16 h-16 bg-gradient-to-r bpprder from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -332,6 +373,24 @@ export function RegistrationModal() {
                 <p className="text-red-500 text-sm mt-1">
                   <AlertCircle className="w-4 h-4 mr-1" />
                   {errors.email}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="password">Password *</Label>
+              <Input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={(e) => handleInputChange("password", e.target.value)}
+                placeholder="Enter your password"
+                className={errors.password ? "border-red-500" : ""}
+              />
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {errors.password}
                 </p>
               )}
             </div>
@@ -496,7 +555,11 @@ export function RegistrationModal() {
               onClick={handleSubmit}
               className="ml-autoflex text-sm font-medium flex justify-center items-center py-2 px-6 rounded-md text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
             >
-              Complete Registration
+              {isPending ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                " Complete Registration"
+              )}
               <ArrowRight className="w-4 h-4 ml-2" />
             </button>
           )}
