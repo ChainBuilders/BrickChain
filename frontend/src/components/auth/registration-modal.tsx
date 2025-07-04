@@ -16,6 +16,7 @@ import { Input } from "../ui/Input";
 import Label from "../ui/Labal";
 import { createAccountAction } from "@/actions/users";
 import router from "next/router";
+import { uploadRealtorDocument } from "@/libs/supabase/storage";
 import toast from "react-hot-toast";
 import { createSupabaseClient } from "@/auth/client";
 import { getErrorMessage } from "@/libs/utils";
@@ -42,7 +43,8 @@ export function RegistrationModal() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-const router = useRouter()
+  const router = useRouter();
+
   const resetModal = () => {
     setStep(1);
     setSelectedType(role);
@@ -60,11 +62,16 @@ const router = useRouter()
   };
 
   const validateForm = () => {
-    const newErrors: Record<string, string> = {};
+  const newErrors: Record<string, string> = {};
 
-    function isFileTooLarge(file: File | null, maxSizeMB: number = 5): boolean {
-      return !!file && file.size > maxSizeMB * 1024 * 1024;
-    }
+  function isValidFileType(file: File | null, allowedTypes: string[]): boolean {
+    if (!file) return false;
+    return allowedTypes.some(type => file.type.includes(type));
+  }
+
+  function isFileTooLarge(file: File | null, maxSizeMB: number = 5): boolean {
+    return !!file && file.size > maxSizeMB * 1024 * 1024;
+  }
 
     if (!formData.fullName.trim()) {
       newErrors.fullName = "Full name is required";
@@ -109,24 +116,70 @@ const router = useRouter()
       }
     }
 
+     if (selectedType === "realtor") {
+    if (!formData.governmentId) {
+      newErrors.governmentId = "Government-issued ID is required";
+    } else if (!isValidFileType(formData.governmentId, ['image/jpeg', 'image/png', 'application/pdf'])) {
+      newErrors.governmentId = "Only JPG, PNG, or PDF files are allowed";
+    } else if (isFileTooLarge(formData.governmentId, 3)) {
+      newErrors.governmentId = "Government ID must be less than 3MB";
+    }
+
+    if (!formData.companyDocument) {
+      newErrors.companyDocument = "Company document is required";
+    } else if (!isValidFileType(formData.companyDocument, ['image/jpeg', 'image/png', 'application/pdf'])) {
+      newErrors.companyDocument = "Only JPG, PNG, or PDF files are allowed";
+    } else if (isFileTooLarge(formData.companyDocument, 5)) {
+      newErrors.companyDocument = "Company document must be less than 5MB";
+    }
+  }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+// Update the handleSubmit function in registration-modal.tsx
 const handleSubmit = async () => {
- 
+  if (!selectedType) return;
 
   setIsPending(true);
   try {
+    // Upload files if realtor
+    let governmentIdUrl = '';
+    let companyDocumentUrl = '';
+
+    if (selectedType === 'realtor') {
+      if (!formData.governmentId || !formData.companyDocument) {
+        throw new Error('Both documents are required for realtors');
+      }
+
+      // Upload government ID
+     const govIdResult = await uploadRealtorDocument(
+        formData.governmentId,
+        "government-id"
+      );
+      if (govIdResult.error) throw new Error(govIdResult.error);
+      governmentIdUrl = govIdResult.url;
+
+      // Upload company document
+      const companyDocResult = await uploadRealtorDocument(
+        formData.companyDocument,
+        "company-document"
+      );
+      if (companyDocResult.error) throw new Error(companyDocResult.error);
+      companyDocumentUrl = companyDocResult.url;
+    }
+
     const form = new FormData();
     form.append("email", formData.email);
     form.append("password", formData.password);
+    form.append("userType", selectedType);
 
-    // 1. Create or verify account
+    // Create account
     const { errorMessage, userId } = await createAccountAction(form);
     if (errorMessage) throw new Error(errorMessage);
 
-    // 2. Sign in to get session
+    // Sign in
     const { data: { session }, error: signInError } = 
       await supabase.auth.signInWithPassword({
         email: formData.email,
@@ -135,7 +188,7 @@ const handleSubmit = async () => {
 
     if (signInError || !session) throw signInError || new Error("Login failed");
 
-    // 3. Save additional user data
+    // Save additional user data
     const response = await fetch("/api/users", {
       method: "POST",
       headers: {
@@ -150,14 +203,23 @@ const handleSubmit = async () => {
           fullName: formData.fullName,
           nin: formData.nin,
           phone: formData.phone,
-          businessName: formData.businessName
+          businessName: formData.businessName,
+          // Add the document URLs for realtors
+          ...(selectedType === 'realtor' && {
+            governmentIdUrl,
+            companyDocumentUrl
+          })
         }
       }),
     });
 
     if (!response.ok) throw new Error("Profile save failed");
 
-    router.push("/investor-dashboard");
+    const dashboardPath = selectedType === 'realtor' 
+      ? '/realtor-dashboard' 
+      : '/investor-dashboard';
+    
+    router.push(dashboardPath);
     toast.success("Registration complete!");
   } catch (error) {
     toast.error(getErrorMessage(error));
@@ -165,7 +227,7 @@ const handleSubmit = async () => {
     setIsPending(false);
   }
 };
-
+  
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
 
@@ -278,7 +340,7 @@ const handleSubmit = async () => {
                     ? "ring-1 ring-blue-500 bg-blue-50"
                     : "hover:bg-slate-50"
                 }`}
-                // onClick={() => setSelectedType("realtor")}
+                onClick={() => setSelectedType("realtor")}
               >
                 <div className="text-center pb-4">
                   <div className="w-16 h-16 bg-gradient-to-r bpprder from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">

@@ -2,6 +2,8 @@ import { createSupabaseClient } from "@/auth/server";
 import { NextResponse } from "next/server";
 import { getErrorMessage } from "@/libs/utils";
 
+
+
 export async function POST(request: Request) {
   try {
     const supabase = createSupabaseClient();
@@ -18,12 +20,30 @@ export async function POST(request: Request) {
 
     const { userData } = await request.json();
     
-    // Validate required fields
+    // Validate required fields including userType
     if (!userData?.id || !userData?.email || !userData?.userType) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
+    }
+
+    // Validate userType is either 'investor' or 'realtor'
+    if (!['investor', 'realtor'].includes(userData.userType)) {
+      return NextResponse.json(
+        { error: "Invalid user type" },
+        { status: 400 }
+      );
+    }
+
+    // Additional validation for realtors
+    if (userData.userType === 'realtor') {
+      if (!userData.businessName || !userData.governmentIdUrl || !userData.companyDocumentUrl) {
+        return NextResponse.json(
+          { error: "Missing required fields for realtor" },
+          { status: 400 }
+        );
+      }
     }
 
     // Ensure the authenticated user matches the user being created
@@ -45,7 +65,10 @@ export async function POST(request: Request) {
         nin: userData.nin,
         phone: userData.phone,
         business_name: userData.businessName,
-        registered_at: userData.registeredTime || new Date().toISOString()
+        government_id_url: userData.governmentIdUrl,
+        company_document_url: userData.companyDocumentUrl,
+        is_verified: userData.userType === 'realtor' ? false : true, // Realtors need verification
+        registered_at: new Date().toISOString()
       })
       .select()
       .single();
