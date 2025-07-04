@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Button from "../ui/Button";
-import { LogOut, User } from "lucide-react";
+import { Building, LogOut, User } from "lucide-react";
 import { useAuth } from "@/context/authContext";
 import { useModalStore } from "@/stores/modalStore";
 
@@ -14,34 +14,34 @@ export default function NavBar() {
   const [toggleMiniDropdown, setToggleMiniDropdown] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  
+
   const { user, isLoading, signOut } = useAuth();
 
   const toggleMenu = () => setToggle(!toggle);
   const miniDropdowntoggle = () => setToggleMiniDropdown(!toggleMiniDropdown);
 
-const handleLogout = async () => {
-  try {
-    await signOut();
-    window.location.href = '/'; 
-  } catch (error) {
-    console.error("Logout failed:", error);
-  }
-};
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
-  const links = user 
+  const links = user
     ? ["Home", "Properties", "Dashboard", "About", "Contact"]
     : ["Home", "Properties", "About", "Contact"];
 
-  const walletAddress = user?.email 
+  const walletAddress = user?.email
     ? `${user.email.substring(0, 3)}...${user.email.split("@")[1]}`
     : "Not connected";
 
   const getRoutePath = (item: string) => {
     if (item === "Home") return "/";
     if (item === "Dashboard") {
-      return user?.user_metadata?.user_type === "realtor" 
-        ? "/realtor-dashboard" 
+      return user?.user_metadata?.user_type === "realtor"
+        ? "/realtor-dashboard"
         : "/investor-dashboard";
     }
     return `/${item.toLowerCase().replace(" ", "")}`;
@@ -51,8 +51,13 @@ const handleLogout = async () => {
     <nav className="bg-white shadow-md sticky top-0 z-50">
       {/* Desktop Menu */}
       <div className="container mx-auto hidden md:flex justify-between items-center">
-        <div className="bg-gradient-to-r from-[#36a888] py-3 to-[#21805f] bg-clip-text text-transparent text-2xl font-bold">
-          BrickChain
+        <div className="flex space-x-2 pt-2 items-center">
+          <span className="bg-gradient-to-r from-[#36a888]  to-[#21805f] p-1 h-fit rounded-lg ">
+            <Building color="white" size={30} className="stroke-3" />
+          </span>{" "}
+          <div className="bg-gradient-to-r from-[#36a888] py-3 to-[#21805f] bg-clip-text text-transparent text-2xl font-bold">
+            BrickChain
+          </div>
         </div>
 
         <div className="space-x-3">
@@ -81,8 +86,8 @@ const handleLogout = async () => {
             <Button className="text-[#1A5D1A] hover:bg-[#e3e1e1]">
               Connect wallet
             </Button>
-            <Button 
-              onClick={onLoginModal} 
+            <Button
+              onClick={onLoginModal}
               className="bg-[#1A5D1A] text-white hover:bg-[#000000]"
             >
               Get Started
@@ -90,7 +95,7 @@ const handleLogout = async () => {
           </div>
         ) : (
           <div className="space-x-3 items-center hidden md:flex flex-col relative">
-            <Button 
+            <Button
               onClick={miniDropdowntoggle}
               className="bg-[white] text-[green] hover:bg-[#a8a7a7] flex space-x-2"
             >
@@ -100,7 +105,7 @@ const handleLogout = async () => {
             {toggleMiniDropdown && (
               <div className="flex flex-col gap-4 absolute bg-gradient-to-r from-emerald-500 to-teal-500 p-3 rounded-lg top-12 right-0 items-center justify-center min-w-[200px]">
                 <span className="text-white font-medium">{walletAddress}</span>
-                <Button 
+                <Button
                   onClick={handleLogout}
                   className="bg-[white] text-[green] border hover:bg-[#a8a7a7] flex space-x-2"
                 >
@@ -118,7 +123,7 @@ const handleLogout = async () => {
         <div className="bg-gradient-to-r hidden w-full sm:flex from-[#36a888] to-[#21805f] bg-clip-text text-transparent text-2xl font-bold">
           BrickChain
         </div>
-        
+
         <button
           className="text-gray-600 absolute top-2 right-3 hover:text-gray-800 focus:outline-none"
           onClick={toggleMenu}
@@ -179,14 +184,14 @@ const handleLogout = async () => {
                 );
               })}
             </div>
-            
+
             <div className="flex justify-between w-full mt-4">
               {!user ? (
                 <div className="flex md:justify-end justify-between items-center w-full">
                   <Button className="bg-[white] border hover:bg-[#e6e6e6] text-[#1A5D1A] text-sm">
                     Connect wallet
                   </Button>
-                  <Button 
+                  <Button
                     onClick={onLoginModal}
                     className="bg-[white] border hover:bg-[#e6e6e6] text-[#1A5D1A] text-sm"
                   >
@@ -196,7 +201,7 @@ const handleLogout = async () => {
               ) : (
                 <div className="flex gap-4 bg-gradient-to-r from-emerald-500 to-teal-500 p-3 rounded-lg items-center justify-center w-full">
                   <span className="text-white font-[600]">{walletAddress}</span>
-                  <Button 
+                  <Button
                     onClick={handleLogout}
                     className="bg-[white] text-[green] border hover:bg-[#a8a7a7] flex space-x-2"
                   >

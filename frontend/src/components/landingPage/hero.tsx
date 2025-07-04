@@ -6,8 +6,13 @@ import Button from "../ui/Button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useModalStore } from "@/stores/modalStore";
+import { useAuth } from "@/context/authContext";
+
 
 export default function Hero() {
+
+  const {user} = useAuth()
+
   const onLoginModal = useModalStore((state) => state.onLoginPrompt);
 
   return (
@@ -30,7 +35,7 @@ export default function Hero() {
       </p>
       <div className="mt-8 flex flex-col md:flex-row items-center  space-x-0 md:space-x-4 space-y-4 md:space-y-0">
         <Link onClick={onLoginModal} href="">
-          <Button className="bg-gradient-to-r hover:cursor-pointer from-[#34b792] w-[180px] to-[#328b79] lg:h-[60px] text-white lg:w-[220px] text-[20px] rounded-sm justify-center flex items-center space-x-2">
+          <Button className={`${user? "hidden" : "block"} bg-gradient-to-r hover:cursor-pointer from-[#34b792] w-[180px] to-[#328b79] lg:h-[60px] text-white lg:w-[220px] text-[20px] rounded-sm justify-center flex items-center space-x-2`}>
             <span>Get Started</span>
             <ArrowRight color="white" size={20} />
           </Button>
