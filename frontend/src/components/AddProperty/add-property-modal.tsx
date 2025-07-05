@@ -4,14 +4,102 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Building, CheckCircle, X } from "lucide-react";
 import { useModalStore } from "@/stores/modalStore";
 import AddPropertyForm from "@/components/AddProperty/AddPropertyForm";
+import {
+  basicSchema,
+  documentsSchema,
+  financialInforSchema,
+  geolocationSchema,
+  propertyDetailSchema,
+  propertyDataSchema,
+  type propertyDataType,
+} from "@/libs/validations/addPropertiesSchem";
+import type { PropertyData } from "./type";
 
 export function AddPropertyModal() {
   const { isAddPropertyOpen, onCloseAddPropertyModal } = useModalStore();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const [propertyData, setPropertyData] = useState<PropertyData>({
+    // Basic Info
+    name: "",
+    description: "",
+    propertyType: "",
+    constructionStatus: "",
+    completionDate: "",
+    address: "",
+    city: "",
+    state: "",
+
+    // Property Details
+    bedrooms: "",
+    bathrooms: "",
+    squareFootage: "",
+    yearBuilt: "",
+    features: [],
+    landSize: "",
+
+    // Land Borders
+    northBorder: "",
+    southBorder: "",
+    eastBorder: "",
+    westBorder: "",
+    landTitle: "",
+    surveyPlan: "",
+
+    // Financial Info
+    totalValue: "",
+    totalTokens: "",
+    minInvestment: "1",
+    expectedROI: "",
+
+    // Geolocation
+    latitude: "",
+    longitude: "",
+    accuracy: "",
+    locationMethod: "",
+
+    // Documents
+    images: [],
+    documents: [],
+    documentTypes: [],
+  });
+
+  const verifyCurrentStep = () => {
+    let schema;
+
+    if (currentStep === 1) schema = basicSchema;
+    if (currentStep === 2) schema = propertyDetailSchema;
+    if (currentStep === 3) schema = financialInforSchema;
+    if (currentStep === 4) schema = geolocationSchema;
+    if (currentStep === 5) schema = documentsSchema;
+
+    if (!schema) return true;
+
+    const result = schema.safeParse(propertyData);
+
+    if (!result.success) {
+      const newErrors: Record<string, string> = {};
+
+      for (const [key, val] of Object.entries(
+        result.error.flatten().fieldErrors
+      )) {
+        if (val && val.length) newErrors[key] = val[0];
+      }
+
+      setErrors(newErrors);
+      return false;
+    }
+
+    setErrors({});
+    return true;
+  };
 
   const handleNextStep = () => {
-    setCurrentStep((prev) => Math.min(prev + 1, 5));
+    if (verifyCurrentStep()) {
+      setCurrentStep((prev) => Math.min(prev + 1, 5));
+    }
   };
 
   const handlePreviousStep = () => {
@@ -19,12 +107,71 @@ export function AddPropertyModal() {
   };
 
   const handleSubmit = async () => {
-    setIsSubmitting(true);
+    try {
+      setIsSubmitting(true);
 
-    // Simulate a 2-second delay
-    await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+      const result = propertyDataSchema.safeParse(propertyData);
 
-    setIsSubmitting(false);
+      if (!result.success) {
+        const newErrors: Record<string, string> = {};
+
+        for (const [key, val] of Object.entries(
+          result.error.flatten().fieldErrors
+        )) {
+          if (val && val.length) newErrors[key] = val[0];
+        }
+
+        setErrors(newErrors);
+        alert(newErrors);
+        return;
+      }
+
+      await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleClose = () => {
+    onCloseAddPropertyModal();
+    setCurrentStep(1);
+    setErrors({});
+
+    setPropertyData({
+      name: "",
+      description: "",
+      propertyType: "",
+      constructionStatus: "",
+      completionDate: "",
+      address: "",
+      city: "",
+      state: "",
+      bedrooms: "",
+      bathrooms: "",
+      squareFootage: "",
+      yearBuilt: "",
+      features: [],
+      landSize: "",
+      northBorder: "",
+      southBorder: "",
+      eastBorder: "",
+      westBorder: "",
+      landTitle: "",
+      surveyPlan: "",
+      totalValue: "",
+      totalTokens: "",
+      minInvestment: "1",
+      expectedROI: "",
+      latitude: "",
+      longitude: "",
+      accuracy: "",
+      locationMethod: "",
+      images: [],
+      documents: [],
+      documentTypes: [],
+    });
   };
 
   useEffect(() => {
@@ -33,7 +180,19 @@ export function AddPropertyModal() {
     } else {
       document.body.style.overflow = "";
     }
-  }, [isAddPropertyOpen]);
+
+    if (propertyData.totalValue) {
+      const value = Number.parseFloat(
+        propertyData.totalValue.replace(/[^0-9.]/g, "")
+      );
+      if (!isNaN(value)) {
+        setPropertyData((prev) => ({
+          ...prev,
+          totalTokens: value.toLocaleString(),
+        }));
+      }
+    }
+  }, [isAddPropertyOpen, propertyData.totalValue]);
 
   if (!isAddPropertyOpen) return null;
 
@@ -42,7 +201,7 @@ export function AddPropertyModal() {
       <div className="bg-white overflow-hidden p-6 rounded-md w-full max-w-4xl overflow-y-auto max-h-[95vh] relative animate-in fade-in duration-500">
         <button
           className="absolute top-2 cursor-pointer border-2 border-gray-300 rounded-md p-[2px] right-2 text-gray-400"
-          onClick={onCloseAddPropertyModal}
+          onClick={handleClose}
         >
           <X className="w-6 h-6" />
         </button>
@@ -135,7 +294,13 @@ export function AddPropertyModal() {
           </span>
         </div>
 
-        <AddPropertyForm currentStep={currentStep} />
+        <AddPropertyForm
+          currentStep={currentStep}
+          errors={errors}
+          setErrors={setErrors}
+          propertyData={propertyData}
+          setPropertyData={setPropertyData}
+        />
 
         <div className="flex justify-between mt-6 pt-6 border-t border-t-slate-200">
           <button
