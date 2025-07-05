@@ -1,18 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import NavBar from "../components/landingPage/navBar";
 import FooterSection from "../components/landingPage/footer";
 import { AddPropertyModal } from "../components/AddProperty/add-property-modal";
+import { AuthProvider } from "@/context/authContext";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+
+const montserrat = Montserrat({ 
   subsets: ["latin"],
+  variable: "--font-montserrat",
+  display: 'swap'
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-inter",
+  display: 'swap'
 });
 
 export const metadata: Metadata = {
@@ -26,14 +31,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <NavBar />
-        {children}
-        <FooterSection />
-        <AddPropertyModal />
+    <html lang="en" className={`${montserrat.variable} ${inter.variable}`}>
+      <body className="font-sans"> 
+        <AuthProvider>
+          <NavBar />
+          {children}
+          <FooterSection />
+          <AddPropertyModal />
+        </AuthProvider>
       </body>
     </html>
   );

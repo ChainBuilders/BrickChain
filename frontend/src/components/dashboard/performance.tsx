@@ -10,12 +10,11 @@ export default function Performance() {
   const [selectedPeriod, setSelectedPeriod] = useState<string>("7d");
 
   return (
-    <div>
-      <div className="border-0 shadow-lg p-6 rounded-md animate-in bg-white slide-in-from-bottom duration-700 delay-200">
+      <div className="border-0 shadow-lg w- p-3 md:p-8 rounded-md animate-in bg-white slide-in-from-bottom duration-700 w- delay-200">
         <div className="mb-5">
           <div className="flex items-center flex-col md:flex-row gap-3 justify-center w-full md:justify-between">
             <h1 className="text-xl text-center md:text-start font-semibold">Commission Performance</h1>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-5 md:space-x-3">
               <button
                 onClick={() => setSelectedPeriod("7d")}
                 className={cn(
@@ -63,7 +62,5 @@ export default function Performance() {
           </div>
         </div>
       </div>
-
-    </div>
   );
 }

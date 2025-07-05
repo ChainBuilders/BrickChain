@@ -5,8 +5,13 @@ import {
   Users,
 } from "lucide-react";
 import React from "react";
+import { User } from "@supabase/supabase-js";
 
-function RealtorWelcome() {
+type RealtorWelcomeProps = {
+  user: User;
+};
+
+function RealtorWelcome({ user }: RealtorWelcomeProps) {
 
   const stats = [
     {
@@ -42,12 +47,12 @@ function RealtorWelcome() {
       bgColor: "bg-orange-100",
     },
   ];
-
+console.log(user.user_metadata)
   return (
     <div>
       <div className="mb-8 animate-in fade-in duration-700">
         <h1 className="text-3xl font-bold text-slate-900 mb-2">
-          Welcome back, Tali
+          Welcome back, {user.email}
         </h1>
         <p className="text-slate-600">
           Manage your property listings, track commissions, and grow your

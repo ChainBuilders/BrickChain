@@ -1,72 +1,88 @@
-"use client";
+'use client'
 
-import { useModalStore } from "@/stores/modalStore";
-import { AlertCircle, ArrowRight, Eye, EyeOff, X } from "lucide-react";
-import { Input } from "../ui/Input";
-import Label from "../ui/Labal";
-import { useState } from "react";
-// import { useState } from "react";
+import { useModalStore } from "@/stores/modalStore"
+import { AlertCircle, ArrowRight, Eye, EyeOff, X } from "lucide-react"
+import { Input } from "../ui/Input"
+import Label from "../ui/Labal"
+import { useState } from "react"
+import { useAuth } from "@/context/authContext"
+import { useRouter } from "next/navigation"
+import toast from "react-hot-toast"
+import { getErrorMessage } from "@/libs/utils"
 
 export function LoginModal() {
-  const { isLoginOpen, onCloseLoginModal, onRegisterModal } = useModalStore();
-  const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoginOpen, onCloseLoginModal, onRegisterModal } = useModalStore()
+  const [showPassword, setShowPassword] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-  });
+  })
+
+  const { signIn } = useAuth()
+  const router = useRouter()
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }))
 
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: value }));
+      setErrors((prev) => ({ ...prev, [field]: "" }))
     }
-  };
+  }
 
   const validateForm = () => {
-    const newErrors: Record<string, string> = {};
+    const newErrors: Record<string, string> = {}
 
     if (!formData.email.trim()) {
-      newErrors.email = "Email address is required";
+      newErrors.email = "Email address is required"
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
+      newErrors.email = "Please enter a valid email address"
     }
 
     if (!formData.password.trim()) {
-      newErrors.password = "Password is required";
+      newErrors.password = "Password is required"
     }
 
     if (formData.password && formData.password.length < 8) {
-      newErrors.password = "Password must be upto 8 or more";
+      newErrors.password = "Password must be 8 characters or more"
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleSubmit = async () => {
-    if (!validateForm()) return;
+    if (!validateForm()) return
 
-    setIsLoading(true);
+    setIsLoading(true)
+    try {
+      await signIn({
+        email: formData.email,
+        password: formData.password
+      })
+      onCloseLoginModal()
+    } catch (error) {
+      toast.error(getErrorMessage(error))
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-  };
   const handleClose = () => {
-    onCloseLoginModal();
+    onCloseLoginModal()
     setFormData({
       email: "",
       password: "",
-    });
-    setErrors({});
-  };
+    })
+    setErrors({})
+  }
 
-  if (!isLoginOpen) return null;
+  if (!isLoginOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex select-none items-center justify-center bg-black/80">
-      <div className="bg-white  relative rounded-xl shadow-xl w-[calc(100%-30px)] max-w-md p-6 animate-in fade-in duration-500">
+      <div className="bg-white relative rounded-xl shadow-xl w-[calc(100%-30px)] max-w-md p-6 animate-in fade-in duration-500">
         <button
           onClick={handleClose}
           className="absolute top-2 cursor-pointer border-2 border-gray-300 rounded-md p-[2px] right-3 text-gray-400"
@@ -106,9 +122,7 @@ export function LoginModal() {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
-                  onChange={(e) =>
-                    handleInputChange("password", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange("password", e.target.value)}
                   placeholder="Enter your password"
                   className={errors.password ? "border-red-500 pr-10" : "pr-10"}
                 />
@@ -159,7 +173,7 @@ export function LoginModal() {
             <p className="text-sm text-slate-600">
               Don't have an account?{" "}
               <button
-                className="text-emerald-600  hover:text-emerald-500 font-medium"
+                className="text-emerald-600 hover:text-emerald-500 font-medium"
                 onClick={() => onRegisterModal()}
               >
                 Sign up
@@ -169,5 +183,5 @@ export function LoginModal() {
         </div>
       </div>
     </div>
-  );
+  )
 }
