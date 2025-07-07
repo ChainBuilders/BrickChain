@@ -213,4 +213,4 @@ export const propertyDataSchema = basicSchema
     }
   });
 
-export type propertyDataType = z.infer<typeof propertyDataSchema>;
+export type PropertyDataType = z.infer<typeof propertyDataSchema>;

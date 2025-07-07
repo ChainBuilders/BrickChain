@@ -11,13 +11,13 @@ import {
   geolocationSchema,
   propertyDetailSchema,
   propertyDataSchema,
-  type propertyDataType,
+  // type propertyDataType,
 } from "@/libs/validations/addPropertiesSchem";
 import type { PropertyData } from "./type";
 
 export function AddPropertyModal() {
   const { isAddPropertyOpen, onCloseAddPropertyModal } = useModalStore();
-  const [currentStep, setCurrentStep] = useState(5);
+  const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -163,7 +163,7 @@ export function AddPropertyModal() {
       totalValue: "",
       totalTokens: "",
       minInvestment: "1",
-      expectedROI: "",
+      expectedROI: "", 
       latitude: "",
       longitude: "",
       accuracy: "",
@@ -332,6 +332,7 @@ export function AddPropertyModal() {
             </button>
           )}
         </div>
+
       </div>
     </div>
   );

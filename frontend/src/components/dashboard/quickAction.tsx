@@ -1,3 +1,5 @@
+import { properties } from "@/data/propertiesData";
+import { useModalStore } from "@/stores/modalStore";
 import {
   Plus,
   Download,
@@ -13,6 +15,9 @@ import {
 import React from "react";
 
 export default function QuickAction() {
+  const onInvestNowOpenModal = useModalStore((state) => state.onInvestNowOpenModal);
+
+
   return (
     <>
       <div className="w-full bg-white rounded-lg shadow-lg">
@@ -21,7 +26,9 @@ export default function QuickAction() {
         </div>
 
         <div className="p-6 pt-0 space-y-3">
-          <button className="inline-flex items-center justify-center w-full gap-2 whitespace-nowrap rounded-md px-4 py-2 text-white h-10 font-medium outline-none bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700">
+          <button className="inline-flex items-center justify-center w-full gap-2 whitespace-nowrap rounded-md px-4 py-2 text-white h-10 font-medium outline-none bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
+          onClick={()=> onInvestNowOpenModal(properties[2])}
+          >
             <Search color="white" /> <span>Explore New Properties</span>
           </button>
           <button className="inline-flex items-center justify-center gap-2 w-full border border-stone-400 whitespace-nowrap rounded-md px-4 py-2 hover:bg-slate-100 h-10 font-medium outline-none text-black">
