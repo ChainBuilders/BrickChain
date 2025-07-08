@@ -13,7 +13,7 @@ export default function Team() {
     },
     {
       id: 2,
-      name: "Olijimi Adebakin",
+      name: "Olujimi Adebakin",
       about:
         "Blockchain Architect with a background in finance and over 8 years of experience designing secure distributed systems.",
       role: "CTO & Co Founder Brickchain",
@@ -21,7 +21,7 @@ export default function Team() {
     },
     {
       id: 3,
-      name: "Obed Smart",
+      name: "Obed Chukwu",
       about:
         "Real Estate Expert with 10+ years in property management and digital transformation in the real estate sector.",
       role: "CEO & Co Founder Brickchain",
