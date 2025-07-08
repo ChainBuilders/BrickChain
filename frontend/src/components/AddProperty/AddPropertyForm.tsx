@@ -7,15 +7,22 @@ import {
   MapPin,
   Navigation,
   Upload,
+  X,
 } from "lucide-react";
 import React, { useState } from "react";
 import Label from "../ui/Labal";
 import { Input } from "../ui/Input";
 import type { PropertyData } from "./type";
 import Select from "../ui/select";
+import { accuracyToZoom } from "@/libs/AccuracyZoom";
+import { cn } from "@/libs/utils";
 
 type AddPropertyFormProps = {
   currentStep: number | null;
+  errors: Record<string, string>;
+  setErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  propertyData: PropertyData;
+  setPropertyData: React.Dispatch<React.SetStateAction<PropertyData>>;
 };
 
 const propertyTypes = [
@@ -33,21 +40,6 @@ const constructionStatuses = [
   "Completed",
   "Under Construction",
   "Planned/Pre-Construction",
-];
-
-const propertyFeatures = [
-  "Swimming Pool",
-  "Gym/Fitness Center",
-  "Parking Garage",
-  "Security System",
-  "Garden/Landscaping",
-  "Balcony/Terrace",
-  "Air Conditioning",
-  "Generator",
-  "Elevator",
-  "Playground",
-  "24/7 Security",
-  "CCTV Surveillance",
 ];
 
 const landTitleTypes = [
@@ -75,130 +67,86 @@ const documentTypes = [
   "Compliance Certificates",
 ];
 
-function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
-  const [errors, setErrors] = useState<Record<string, string>>({});
+function AddPropertyForm({
+  currentStep,
+  errors,
+  setErrors,
+  propertyData,
+  setPropertyData,
+}: AddPropertyFormProps) {
   const [gettingLocation, setGettingLocation] = useState(false);
+  const [newFeature, setNewFeature] = useState("");
+  const [features, setFeatures] = useState<string[]>([]);
 
-  const [propertyData, setPropertyData] = useState<PropertyData>({
-    // Basic Info
-    name: "",
-    description: "",
-    propertyType: "",
-    constructionStatus: "",
-    completionDate: "",
-    address: "",
-    city: "",
-    state: "",
-
-    // Property Details
-    bedrooms: "",
-    bathrooms: "",
-    squareFootage: "",
-    yearBuilt: "",
-    features: [],
-    landSize: "",
-
-    // Land Borders
-    northBorder: "",
-    southBorder: "",
-    eastBorder: "",
-    westBorder: "",
-    landTitle: "",
-    surveyPlan: "",
-
-    // Financial Info
-    totalValue: "",
-    totalTokens: "",
-    minInvestment: "1",
-    expectedROI: "",
-
-    // Geolocation
-    latitude: "",
-    longitude: "",
-    accuracy: "",
-    locationMethod: "",
-
-    // Documents
-    images: [],
-    documents: [],
-    documentTypes: [],
-  });
-
-  function accuracyToZoom(accuracyMeters: number, latitude: number): number {
-  // Calculate the earth’s circumference at this latitude
-  const earthCircumference = 40075017 * Math.cos((latitude * Math.PI) / 180);
-  // Total pixels across the world map at zoom level 21 (256px tile × 2^21 tiles)
-  const worldPixels = 256 * 2 ** 21;
-  // Meters per pixel at zoom 21
-  const metersPerPixelAt21 = earthCircumference / worldPixels;
-
-  // We want the accuracy circle to span roughly half the viewport width
-  const targetPixels = window.innerWidth / 2;
-  // Required meters-per-pixel to visualize that accuracy
-  const requiredMpp = accuracyMeters / targetPixels;
-
-  // Solve for zoom: metersPerPixelAtZ = metersPerPixelAt21 * 2^(21 - Z)
-  // ⇒ 2^(21 - Z) = metersPerPixelAtZ / metersPerPixelAt21
-  // ⇒ 21 - Z = log2(metersPerPixelAtZ / metersPerPixelAt21)
-  // ⇒ Z = 21 - log2(metersPerPixelAtZ / metersPerPixelAt21)
-  const zoom = 21 - Math.log2(requiredMpp / metersPerPixelAt21);
-
-  // Clamp into valid Google Maps zoom range
-  return Math.max(0, Math.min(21, Math.round(zoom)));
-}
-
-  const getCurrentLocation = async () => {
-  setGettingLocation(true);
-
-  if (!navigator.geolocation) {
-    alert("Geolocation is not supported by this browser.");
-    setGettingLocation(false);
-    return;
-  }
-
-  // 1️⃣ Check permission state (if supported)
-  if (navigator.permissions) {
-    try {
-      const status = await navigator.permissions.query({ name: "geolocation" });
-      if (status.state === "denied") {
-        alert(
-          "Location access has been blocked. Please enable it in your browser settings."
-        );
-        setGettingLocation(false);
-        return;
-      }
-      // If status.state is "prompt" or "granted", we can proceed
-    } catch {
-      // Permissions API can throw in insecure origins; ignore and proceed
-    }
-  }
-
-  // 2️⃣ Now actually request position (this will trigger the browser prompt if needed)
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
+  const handleAddFeature = () => {
+    const trimmed = newFeature.trim();
+    if (trimmed && !features.includes(trimmed)) {
+      setFeatures((prev) => [...prev, trimmed]);
       setPropertyData((prev) => ({
         ...prev,
-        latitude: position.coords.latitude.toString(),
-        longitude: position.coords.longitude.toString(),
-        locationMethod: "GPS",
+        features: [...prev.features, trimmed],
       }));
-      setGettingLocation(false);
-    },
-    (error) => {
-      console.error("Error getting location:", error);
-      alert(
-        "Unable to get your location. Please enter coordinates manually."
-      );
-      setGettingLocation(false);
-    },
-    {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 60000,
     }
-  );
-};
+    setNewFeature("");
+  };
 
+  const handleRemoveFeature = (feature: string) => {
+    setFeatures((prev) => prev.filter((f) => f !== feature));
+    setPropertyData((prev) => ({
+      ...prev,
+      features: prev.features.filter((f) => f !== feature),
+    }));
+  };
+
+  const getCurrentLocation = async () => {
+    setGettingLocation(true);
+
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by this browser.");
+      setGettingLocation(false);
+      return;
+    }
+
+    // 1️⃣ Check permission state (if supported)
+    if (navigator.permissions) {
+      try {
+        const status = await navigator.permissions.query({
+          name: "geolocation",
+        });
+        if (status.state === "denied") {
+          alert(
+            "Location access has been blocked. Please enable it in your browser settings."
+          );
+          setGettingLocation(false);
+          return;
+        }
+      } catch {}
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setPropertyData((prev) => ({
+          ...prev,
+          latitude: position.coords.latitude.toString(),
+          longitude: position.coords.longitude.toString(),
+          locationMethod: "GPS",
+        }));
+        setGettingLocation(false);
+      },
+      (error) => {
+        console.error("Error getting location:", error);
+        alert(
+          "Unable to get your location. Please enter coordinates manually."
+        );
+        setGettingLocation(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000,
+      }
+    );
+  };
 
   const handleInputChange = (
     field: keyof PropertyData,
@@ -211,23 +159,14 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
     }
   };
 
-  const handleFeatureToggle = (feature: string) => {
-    setPropertyData((prev) => ({
-      ...prev,
-      features: prev.features.includes(feature)
-        ? prev.features.filter((f) => f !== feature)
-        : [...prev.features, feature],
-    }))
-  }
-
-    const handleDocumentTypeToggle = (docType: string) => {
+  const handleDocumentTypeToggle = (docType: string) => {
     setPropertyData((prev) => ({
       ...prev,
       documentTypes: prev.documentTypes.includes(docType)
         ? prev.documentTypes.filter((d) => d !== docType)
         : [...prev.documentTypes, docType],
-    }))
-  }
+    }));
+  };
 
   switch (currentStep) {
     case 1:
@@ -241,7 +180,15 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                 value={propertyData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
                 placeholder="e.g., Lagos Luxury Apartments"
+                className={cn(errors.state && "border border-red-500")}
               />
+              {errors.name && (
+                <p className="text-red-500 flex items-center text-sm mt-1">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+
+                  {errors.name}
+                </p>
+              )}
             </div>
             <div>
               <Label htmlFor="propertyType">Property Type *</Label>
@@ -251,7 +198,14 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                 display="Select property type"
                 options={propertyTypes}
                 onChange={(value) => handleInputChange("propertyType", value)}
+                // className={cn(errors.state && "border border-red-500")}
               />
+              {errors.propertyType && (
+                <p className="text-red-500 text-sm flex items-center mt-1">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {errors.propertyType}
+                </p>
+              )}
             </div>
           </div>
 
@@ -263,8 +217,17 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
               rows={3}
               value={propertyData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
-              className="w-full border border-gray-300 rounded-md p-2 focus:outline-gray-400 focus:outline-2 focus:ring-1 focus:ring-gray-300 focus:outline-offset-2"
+              className={cn(
+                "w-full border border-gray-300 rounded-md p-2 focus:outline-gray-400 focus:outline-2 focus:ring-1 focus:ring-gray-300 focus:outline-offset-2",
+                errors.state && "border border-red-500"
+              )}
             />
+            {errors.description && (
+              <p className="text-red-500 text-sm mt-1 flex items-center ">
+                <AlertCircle className="w-4 h-4 mr-1" />
+                {errors.description}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -300,7 +263,14 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
               value={propertyData.address}
               onChange={(e) => handleInputChange("address", e.target.value)}
               placeholder="Street address"
+              className={cn(errors.address && "border border-red-500")}
             />
+            {errors.address && (
+              <p className="text-red-500 text-sm mt-1 flex items-center ">
+                <AlertCircle className="w-4 h-4 mr-1" />
+                {errors.address}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -311,7 +281,14 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                 value={propertyData.city}
                 onChange={(e) => handleInputChange("city", e.target.value)}
                 placeholder="e.g., Lagos"
+                className={cn(errors.city && "border border-red-500")}
               />
+              {errors.city && (
+                <p className="text-red-500 text-sm mt-1 flex items-center ">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {errors.city}
+                </p>
+              )}
             </div>
             <div>
               <Label htmlFor="state">State *</Label>
@@ -320,7 +297,14 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                 value={propertyData.state}
                 onChange={(e) => handleInputChange("state", e.target.value)}
                 placeholder="e.g., Lagos State"
+                className={cn(errors.state && "border border-red-500")}
               />
+              {errors.state && (
+                <p className="text-red-500 text-sm mt-1 flex items-center ">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {errors.state}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -338,7 +322,16 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                 value={propertyData.bedrooms}
                 onChange={(e) => handleInputChange("bedrooms", e.target.value)}
                 placeholder="0"
+                className={cn(errors.bedrooms && "border border-red-500")}
               />
+
+              {errors.bedrooms && (
+                <p className="text-red-500 flex items-center text-sm mt-1">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+
+                  {errors.bedrooms}
+                </p>
+              )}
             </div>
             <div>
               <Label htmlFor="bathrooms">Bathrooms </Label>
@@ -348,7 +341,14 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                 value={propertyData.bathrooms}
                 onChange={(e) => handleInputChange("bathrooms", e.target.value)}
                 placeholder="0"
+                className={cn(errors.bathrooms && "border border-red-500")}
               />
+              {errors.bathrooms && (
+                <p className="text-red-500 flex items-center text-sm mt-1">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {errors.bathrooms}
+                </p>
+              )}
             </div>
             <div>
               <Label htmlFor="squareFootage">Square Footage </Label>
@@ -360,7 +360,16 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                   handleInputChange("squareFootage", e.target.value)
                 }
                 placeholder="0"
+                className={cn(errors.squareFootage && "border border-red-500")}
               />
+
+              {errors.squareFootage && (
+                <p className="text-red-500 flex items-center text-sm mt-1">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+
+                  {errors.squareFootage}
+                </p>
+              )}
             </div>
           </div>
 
@@ -373,7 +382,15 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                 value={propertyData.yearBuilt}
                 onChange={(e) => handleInputChange("yearBuilt", e.target.value)}
                 placeholder="2024"
+                className={cn(errors.yearBuilt && "border border-red-500")}
               />
+              {errors.yearBuilt && (
+                <p className="text-red-500 flex items-center text-sm mt-1">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+
+                  {errors.yearBuilt}
+                </p>
+              )}
             </div>
             <div>
               <Label htmlFor="landSize">Land Size (sqm)</Label>
@@ -383,28 +400,72 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                 value={propertyData.landSize}
                 onChange={(e) => handleInputChange("landSize", e.target.value)}
                 placeholder="500"
+                className={cn(errors.landSize && "border border-red-500")}
               />
+
+              {errors.landSize && (
+                <p className="text-red-500 flex items-center text-sm mt-1">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+
+                  {errors.landSize}
+                </p>
+              )}
             </div>
           </div>
 
           <div>
-            <Label>Property Features</Label>
-            <div className="grid grid-cols-3 gap-2 mt-2">
-              {propertyFeatures.map((feature) => (
-                <div key={feature} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id={feature}
-                    checked={propertyData.features.includes(feature)}
-                    onChange={() => handleFeatureToggle(feature)}
-                    className="w-4 h-4"
+            <h4 className="font-semibold mb-5">Property Features</h4>
+            <div
+              className={cn(
+                "space-y-2",
+                errors.features && "border border-red-500 p-2 rounded-md"
+              )}
+            >
+              <div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    value={newFeature}
+                    onChange={(e) => setNewFeature(e.target.value)}
+                    placeholder="Enter a new feature"
                   />
-                  <Label htmlFor={feature} className="text-sm">
-                    {feature}
-                  </Label>
+                  <button
+                    type="button"
+                    onClick={handleAddFeature}
+                    className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700"
+                  >
+                    Add
+                  </button>
                 </div>
-              ))}
+              </div>
+
+              {features.length > 0 && (
+                <div className="grid grid-cols-3 gap-2 mt-4">
+                  {features.map((feature) => (
+                    <div
+                      key={feature}
+                      className="flex items-center justify-between px-3 py-1 border border-slate-200 rounded break-words max-w-full"
+                    >
+                      <span className="text-sm">{feature}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveFeature(feature)}
+                        className="text-slate-500 hover:text-slate-700 cursor-pointer text-sm"
+                      >
+                        <X />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+            {errors.features && (
+              <p className="text-red-500 flex items-center text-sm mt-1">
+                <AlertCircle className="w-4 h-4 mr-1" />
+
+                {errors.features}
+              </p>
+            )}
           </div>
 
           <div className="space-y-4">
@@ -419,7 +480,16 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                     handleInputChange("northBorder", e.target.value)
                   }
                   placeholder="e.g., Main Road"
+                  className={cn(errors.northBorder && "border border-red-500")}
                 />
+
+                {errors.northBorder && (
+                  <p className="text-red-500 flex items-center text-sm mt-1">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+
+                    {errors.northBorder}
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="southBorder">South Border</Label>
@@ -430,7 +500,16 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                     handleInputChange("southBorder", e.target.value)
                   }
                   placeholder="e.g., Residential Plot"
+                  className={cn(errors.southBorder && "border border-red-500")}
                 />
+
+                {errors.southBorder && (
+                  <p className="text-red-500 flex items-center text-sm mt-1">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+
+                    {errors.southBorder}
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="eastBorder">East Border</Label>
@@ -441,7 +520,15 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                     handleInputChange("eastBorder", e.target.value)
                   }
                   placeholder="e.g., Commercial Building"
+                  className={cn(errors.eastBorder && "border border-red-500")}
                 />
+                {errors.eastBorder && (
+                  <p className="text-red-500 flex items-center text-sm mt-1">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+
+                    {errors.eastBorder}
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="westBorder">West Border</Label>
@@ -452,7 +539,15 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                     handleInputChange("westBorder", e.target.value)
                   }
                   placeholder="e.g., Open Space"
+                  className={cn(errors.westBorder && "border border-red-500")}
                 />
+                {errors.westBorder && (
+                  <p className="text-red-500 flex items-center text-sm mt-1">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+
+                    {errors.westBorder}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -465,6 +560,14 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                   options={landTitleTypes}
                   onChange={(value) => handleInputChange("propertyType", value)}
                 />
+
+                {errors.landTitle && (
+                  <p className="text-red-500 flex items-center text-sm mt-1">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+
+                    {errors.landTitle}
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="surveyPlan">Survey Plan Number</Label>
@@ -475,7 +578,16 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                     handleInputChange("surveyPlan", e.target.value)
                   }
                   placeholder="e.g., SP/LAG/2024/001"
+                  className={cn(errors.surveyPlan && "border border-red-500")}
                 />
+
+                {errors.surveyPlan && (
+                  <p className="text-red-500 flex items-center text-sm mt-1">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+
+                    {errors.surveyPlan}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -507,7 +619,16 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                       handleInputChange("totalValue", e.target.value)
                     }
                     placeholder="50000000"
+                    className={cn(errors.totalValue && "border border-red-500")}
                   />
+
+                  {errors.totalValue && (
+                    <p className="text-red-500 flex items-center text-sm mt-1">
+                      <AlertCircle className="w-4 h-4 mr-1" />
+
+                      {errors.totalValue}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="totalTokens">Total Tokens Available</Label>
@@ -519,9 +640,7 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                     placeholder="Auto-calculated"
                   />
                 </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4 mt-4">
                 <div>
                   <Label htmlFor="minInvestment">Minimum Investment (₦)</Label>
                   <Input
@@ -532,20 +651,18 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                       handleInputChange("minInvestment", e.target.value)
                     }
                     placeholder="1"
+                    className={cn(
+                      errors.minInvestment && "border border-red-500"
+                    )}
                   />
-                </div>
-                <div>
-                  <Label htmlFor="expectedROI">Expected Annual ROI (%) </Label>
-                  <Input
-                    id="expectedROI"
-                    type="number"
-                    step="0.1"
-                    value={propertyData.expectedROI}
-                    onChange={(e) =>
-                      handleInputChange("expectedROI", e.target.value)
-                    }
-                    placeholder="8.5"
-                  />
+
+                  {errors.minInvestment && (
+                    <p className="text-red-500 flex items-center text-sm mt-1">
+                      <AlertCircle className="w-4 h-4 mr-1" />
+
+                      {errors.minInvestment}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -576,10 +693,10 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                     </div>
                     <div>
                       <span className="text-slate-600">
-                        Expected Annual Return:
+                        Minimium investment
                       </span>
                       <span className="font-semibold ml-2">
-                        {propertyData.expectedROI}%
+                        {propertyData.minInvestment}
                       </span>
                     </div>
                   </div>
@@ -644,7 +761,16 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                         handleInputChange("latitude", e.target.value)
                       }
                       placeholder="6.5244"
+                      className={cn(errors.latitude && "border border-red-500")}
                     />
+
+                    {errors.latitude && (
+                      <p className="text-red-500 flex items-center text-sm mt-1">
+                        <AlertCircle className="w-4 h-4 mr-1" />
+
+                        {errors.latitude}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="longitude">Longitude *</Label>
@@ -655,7 +781,18 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                         handleInputChange("longitude", e.target.value)
                       }
                       placeholder="3.3792"
+                      className={cn(
+                        errors.longitude && "border border-red-500"
+                      )}
                     />
+
+                    {errors.longitude && (
+                      <p className="text-red-500 flex items-center text-sm mt-1">
+                        <AlertCircle className="w-4 h-4 mr-1" />
+
+                        {errors.longitude}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -686,9 +823,10 @@ function AddPropertyForm({ currentStep }: AddPropertyFormProps) {
                           const url = `https://www.google.com/maps/@${lat},${lng},${zoom}z`;
                           window.open(url, "_blank");
                         }}
+                        className="flex items-center border py-1 px-3 cursor-pointer rounded-md border-blue-500"
                       >
                         <Globe className="w-4 h-4 mr-1" />
-                        View on Map
+                        <span>View on Map</span>
                       </button>
                     </div>
                   </div>
